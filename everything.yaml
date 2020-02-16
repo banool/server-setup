@@ -1,4 +1,30 @@
 ---
+- hosts: webservers
+  name: Base installation
+  tags:
+    - base
+  tasks:
+    - name: Install git and more todo
+      become: yes
+      dnf:
+        name:
+          - git
+    - name: Copy across SSH keys for git purposes
+      copy:    
+        src: "{{ item }}"
+        dest: "/home/{{ unix_user }}/.ssh/"
+        owner: "{{ unix_user }}"
+        mode: 0600
+      with_fileglob:
+          - "{{ host_ssh_source }}/id_rsa*"
+    - name: Make /var/www directory
+      become: yes
+      file:
+        path: /var/www
+        state: directory
+        owner: "{{ unix_user }}"
+        mode: '0777'
+
 - hosts: dbservers
   name: Install MySQL 8
   tags:
@@ -88,6 +114,45 @@
       daemon_reload: true
       enabled: true
       state: started
+
+- hosts: webservers
+  name: Install dport site
+  tags:
+    - dport
+  vars:
+    unix_user: "{{ unix_user }}"
+  tasks:
+    - git:
+        repo: git@gitlab.com:banool/dport-site.git
+        dest: /var/www/dport
+
+- hosts: webservers
+  become: true
+  roles:
+    - role: nginxinc.nginx
+  tags: nginx
+  tasks:
+    - name: Make /etc/nginx/sites-enabled
+      file:
+        path: /etc/nginx/sites-enabled
+        state: directory
+        mode: '0755'
+  vars:
+    nginx_http_template_enable: true
+    nginx_http_template:
+      dport:
+        template_file: http/default.conf.j2
+        conf_file_name: dport.conf
+        conf_file_location: /etc/nginx/sites-enabled
+        servers:
+          server1:
+            listen:
+              listen_localhost:
+                port: 80
+            root: /var/www/dport
+            server_name: "{{ server_name }} www.{{ server_name }}"
+            error_page: /usr/share/nginx/html
+            autoindex: false
 
 # TODO
 # Nginx
