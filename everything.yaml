@@ -1,0 +1,26 @@
+---
+- hosts: dbservers
+  vars:
+    user: daniel
+  remote_user: "{{ user }}"
+  become: yes
+  tasks:
+    - name: Install Python3 PyMySQL
+      yum:
+        name: python3-PyMySQL
+        state: latest
+    - name: Disable existing MySQL module
+      command: yum module disable mysql
+    - name: Get MySQL 8 repo
+      command: wget https://repo.mysql.com/mysql80-community-release-el8-1.noarch.rpm
+      become: no
+    - name: Install locally acquired MySQL 8 repo
+      yum:
+        name: ./mysql80-community-release-el8-1.noarch.rpm
+        state: latest
+    - name: Install MySQL 8 itself 
+      yum:
+        name: mysql-community-server
+        enablerepo: mysql80-community
+        state: latest
+
