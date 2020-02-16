@@ -1,6 +1,8 @@
 ---
 - hosts: dbservers
   name: Install MySQL 8
+  tags:
+    - db
   vars:
     user: "{{ mysql_user }}"
     password: "{{ mysql_password }}"
@@ -31,3 +33,48 @@
         priv: '*.*:ALL'
         state: present
 
+- hosts: webservers
+  name: Install Net Worth site
+  tags:
+    - net_worth
+  vars:
+    unix_user: "{{ unix_user }}"
+  tasks:
+  - name: Pull net-worth image
+    podman_image:
+      name: quay.io/banool/net-worth
+      tag: latest
+  - name: Create systemd spec file
+    become: yes
+    vars:
+      allowed_sites: "{{ net_worth.allowed_sites }}"
+      deployment_mode: "{{ net_worth.deployment_mode }}"
+      secret_key: "{{ net_worth.secret_key }}"
+      sql_engine: "{{ net_worth.sql_engine }}"
+      sql_database: "{{ net_worth.sql_database }}"
+      sql_user: "{{ net_worth.sql_user }}"
+      sql_password: "{{ net_worth.sql_password}}"
+      sql_host: "{{ net_worth.sql_host}}"
+      sql_port: "{{ net_worth.sql_port}}"
+      robinhood_username: "{{ net_worth.robinhood_username }}"
+      robinhood_password: "{{ net_worth.robinhood_password }}"
+      robinhood_2fa_barcode: "{{ net_worth.robinhood_2fa_barcode }}"
+      personal_capital_email: "{{ net_worth.personal_capital_email }}"
+      personal_capital_password: "{{ net_worth.personal_capital_password }}"
+      ui_username: "{{ net_worth.ui_username }}"
+      ui_email: "{{ net_worth.ui_email }}"
+      ui_password: "{{ net_worth.ui_password }}"
+    template:
+      src: templates/net-worth.service.j2
+      dest: /etc/systemd/system/net-worth.service
+      owner: "{{ unix_user }}"
+      group: wheel
+      mode: '0644'
+  - name: Start and enable net-worth service
+    become: yes
+    systemd:
+      name: net-worth
+      daemon_reload: true
+      enabled: true
+      state: started
+  

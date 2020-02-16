@@ -1,0 +1,24 @@
+{
+    "unix_user": "daniel",
+    "mysql_user": "daniel",
+    "mysql_password": "fakefake123^^^",
+    "net_worth": {
+        "secret_key": "fakefkaekfafkeakfekafkekfekf",
+        "allowed_sites": "127.0.0.1,0.0.0.0",
+        "deployment_mode": "dev",
+        "sql_engine": "django.db.backends.mysql",
+        "sql_database": "net_worth",
+        "sql_user": "net_worth_user",
+        "sql_password": "kjsdfk324234jkfs",
+        "sql_host": "127.0.0.1",
+        "sql_port": "3306",
+        "robinhood_username": "username@example.com",
+        "robinhood_password": "fakefakefake",
+        "robinhood_2fa_barcode": "TCFWDASLFNA4U7AP",
+        "personal_capital_email": "username@example.com.au",
+        "personal_capital_password": "fakefakefake",
+        "ui_username": "daniel",
+        "ui_email": "username@example.com",
+        "ui_password": "fakefakefake"
+    }
+}
