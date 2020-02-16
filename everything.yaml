@@ -66,8 +66,8 @@
       ui_username: "{{ net_worth.ui_username }}"
       ui_email: "{{ net_worth.ui_email }}"
       ui_password: "{{ net_worth.ui_password }}"
-      external_port: "{{ net_worth.external_port }}"
       internal_port: "{{ net_worth.internal_port }}"
+      external_port: "{{ net_worth.external_port }}"
     template:
       src: templates/net-worth.service.j2
       dest: /etc/systemd/system/net-worth.service
