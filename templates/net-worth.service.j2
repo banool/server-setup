@@ -9,22 +9,28 @@ TimeoutStartSec=10s
 ExecStartPre=-/usr/bin/podman rm "net-worth"
 User={{ unix_user }}
 
-ExecStart=/usr/bin/podman run -dt --publish 127.0.0.1:{{ net_worth.external_port }}:{{ net_worth.internal_port }} --name net-worth net-worth \
-  -e allowed_sites='{{ net_worth.allowed_sites }}' \
-  -e deployment_mode='{{ net_worth.deployment_mode }}' \
-  -e secret_key='{{ net_worth.secret_key }}' \
-  -e sql_engine='{{ net_worth.sql_engine }}' \
-  -e sql_database='{{ net_worth.sql_database }}' \
-  -e sql_user='{{ net_worth.sql_user }}' \
-  -e sql_password='{{ net_worth.sql_password}}' \
-  -e sql_host='{{ net_worth.sql_host}}' \
-  -e sql_port='{{ net_worth.sql_port}}' \
-  -e robinhood_username='{{ net_worth.robinhood_username }}' \
-  -e robinhood_password='{{ net_worth.robinhood_password }}' \
-  -e robinhood_2fa_barcode='{{ net_worth.robinhood_2fa_barcode }}' \
-  -e personal_capital_email='{{ net_worth.personal_capital_email }}' \
-  -e personal_capital_password='{{ net_worth.personal_capital_password }}' \
-  -e ui_username='{{ net_worth.ui_username }}'
+ExecStart=/usr/bin/podman run -t -a stdout -a stderr \
+  -e allowed_sites='{{ allowed_sites }}' \
+  -e deployment_mode='{{ deployment_mode }}' \
+  -e secret_key='{{ secret_key }}' \
+  -e sql_engine='{{ sql_engine }}' \
+  -e sql_database='{{ sql_database }}' \
+  -e sql_user='{{ sql_user }}' \
+  -e sql_password='{{ sql_password}}' \
+  -e sql_host='{{ sql_host}}' \
+  -e sql_port='{{ sql_port}}' \
+  -e robinhood_username='{{ robinhood_username }}' \
+  -e robinhood_password='{{ robinhood_password }}' \
+  -e robinhood_2fa_barcode='{{ robinhood_2fa_barcode }}' \
+  -e personal_capital_email='{{ personal_capital_email }}' \
+  -e personal_capital_password='{{ personal_capital_password }}' \
+  -e ui_username='{{ ui_username }}' \
+  -e ui_password='{{ ui_password }}' \
+  -e ui_email='{{ ui_email }}' \
+  --network host \
+  --publish 127.0.0.1:{{ external_port }}:{{ internal_port }} \
+  --name net-worth net-worth
+
 
 ExecReload=-/usr/bin/podman stop "net-worth"
 ExecReload=-/usr/bin/podman rm "net-worth"

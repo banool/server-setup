@@ -44,6 +44,8 @@
     podman_image:
       name: quay.io/banool/net-worth
       tag: latest
+  - name: Actually repull net-worth image
+    command: podman pull quay.io/banool/net-worth
   - name: Create systemd spec file
     become: yes
     vars:
@@ -52,8 +54,8 @@
       secret_key: "{{ net_worth.secret_key }}"
       sql_engine: "{{ net_worth.sql_engine }}"
       sql_database: "{{ net_worth.sql_database }}"
-      sql_user: "{{ net_worth.sql_user }}"
-      sql_password: "{{ net_worth.sql_password}}"
+      sql_user: "{{ mysql_user }}"
+      sql_password: "{{ mysql_password}}"
       sql_host: "{{ net_worth.sql_host}}"
       sql_port: "{{ net_worth.sql_port}}"
       robinhood_username: "{{ net_worth.robinhood_username }}"
@@ -64,12 +66,21 @@
       ui_username: "{{ net_worth.ui_username }}"
       ui_email: "{{ net_worth.ui_email }}"
       ui_password: "{{ net_worth.ui_password }}"
+      external_port: "{{ net_worth.external_port }}"
+      internal_port: "{{ net_worth.internal_port }}"
     template:
       src: templates/net-worth.service.j2
       dest: /etc/systemd/system/net-worth.service
       owner: "{{ unix_user }}"
       group: wheel
       mode: '0644'
+  - name: Make net worth database in MySQL
+    mysql_db:
+      name: "{{ net_worth.sql_database }}"
+      state: present
+      login_user: "{{ mysql_user }}"
+      login_password: "{{ mysql_password }}"
+      
   - name: Start and enable net-worth service
     become: yes
     systemd:
@@ -77,4 +88,14 @@
       daemon_reload: true
       enabled: true
       state: started
-  
+
+# TODO
+# Nginx
+# All other sites
+# Crons
+# Deluge
+# Plex
+# External HDD mounts
+# Turning off the screen
+# History for net worth
+# certbot
