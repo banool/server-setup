@@ -1,26 +1,33 @@
 ---
 - hosts: dbservers
+  name: Install MySQL 8
   vars:
-    user: daniel
+    user: "{{ mysql_user }}"
+    password: "{{ mysql_password }}"
   remote_user: "{{ user }}"
   become: yes
   tasks:
-    - name: Install Python3 PyMySQL
-      yum:
-        name: python3-PyMySQL
+    - name: Install MySQL 8 and Python3 PyMySQL
+      dnf:
+        name:
+          - mysql-server 
+          - mysql
+          - python3-PyMySQL
         state: latest
-    - name: Disable existing MySQL module
-      command: yum module disable mysql
-    - name: Get MySQL 8 repo
-      command: wget https://repo.mysql.com/mysql80-community-release-el8-1.noarch.rpm
-      become: no
-    - name: Install locally acquired MySQL 8 repo
-      yum:
-        name: ./mysql80-community-release-el8-1.noarch.rpm
-        state: latest
-    - name: Install MySQL 8 itself 
-      yum:
-        name: mysql-community-server
-        enablerepo: mysql80-community
-        state: latest
+    - name: Start and enable MySQL 8
+      systemd:
+        name: mysqld
+        enabled: true
+        state: started
+    - name: Removes anonymous user account for localhost
+      mysql_user:
+        name: ''
+        host_all: yes
+        state: absent
+    - name: Create database user with name {{ user }} with all database privileges
+      mysql_user:
+        name: "{{ user }}"
+        password: "{{ password }}"
+        priv: '*.*:ALL'
+        state: present
 

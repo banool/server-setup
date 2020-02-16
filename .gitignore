@@ -1,4 +1,7 @@
-# Mine
+# Secrets
+vars.json
+
+# Junk I want to ignore
 *.retry
 *.swp
 

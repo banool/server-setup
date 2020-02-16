@@ -7,9 +7,14 @@ The plan of this repo is to set up all of my websites and services with Docker a
 
 ## Expected conditions of the remote server to begin with
 - A user called `daniel` with sudo power exists with SSH key based access already set up
-- todo
 
 ## Run these commands on the control host
+```
+export ANSIBLE_CONFIG=ansible.cfg
+ansible-playbook --ask-become-pass -i hosts everything.yaml --extra-vars "@vars.json"
+```
+
+Deprecated:
 ```
 mkdir ~/bin
 export PATH="$PATH:~/bin"
@@ -18,9 +23,4 @@ echo 'export PATH="/usr/local/opt/mysql-client/bin:$PATH"' >> ~/.bash_profile
 . ~/.bash_profile
 ```
 
-
-```
-export ANSIBLE_CONFIG=ansible.cfg
-ansible-playbook --ask-become-pass -i hosts everything.yaml
-```
 
