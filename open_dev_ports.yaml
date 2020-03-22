@@ -1,0 +1,7 @@
+---
+- hosts: webservers
+  name: Open all ports to this machine
+  tasks:
+    - name: Open all ports with firewalld
+      become: yes
+      command: firewall-cmd --zone=trusted --add-source=192.168.86.46
