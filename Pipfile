@@ -9,7 +9,6 @@ verify_ssl = true
 ansible = "*"
 paramiko = "*"
 pymysql = {extras = ["rsa"],version = "*"}
-pymysqlrsa = "*"
 
 [requires]
 python_version = "3.7"

@@ -4,7 +4,7 @@
   tags:
     - base
   tasks:
-    - name: Install git and more todo
+    - name: Install git
       become: yes
       dnf:
         name:
@@ -27,6 +27,8 @@
     - name: Put SELinux into Permissive mode
       become: yes
       command: setenforce 0
+    - name: Add github.com as known host
+      shell: ssh-keyscan -H github.com >> "{{ ansible_env.HOME }}/.ssh/known_hosts"
 
 - hosts: dbservers
   name: Install MySQL 8
@@ -78,7 +80,7 @@
   - name: Create systemd spec file
     become: yes
     vars:
-      allowed_sites: "{{ net_worth.allowed_sites }}"
+      allowed_hosts: "{{ net_worth.allowed_hosts }}"
       deployment_mode: "{{ net_worth.deployment_mode }}"
       secret_key: "{{ net_worth.secret_key }}"
       sql_engine: "{{ net_worth.sql_engine }}"
@@ -126,7 +128,7 @@
     unix_user: "{{ unix_user }}"
   tasks:
     - git:
-        repo: git@gitlab.com:banool/dport-site.git
+        repo: git@github.com:banool/dport-site.git
         dest: /var/www/dport
 
 - hosts: webservers
@@ -157,6 +159,8 @@
     - name: Restart nginx
       systemd:
         name: nginx
+        daemon_reload: true
+        enabled: true
         state: restarted
   vars:
     nginx_http_template_enable: true
@@ -172,6 +176,23 @@
                 port: 80
             root: /var/www/dport
             server_name: "{{ server_name }} www.{{ server_name }} {{ ip_address }}"
+            error_page: /usr/share/nginx/html
+            autoindex: false
+      net-worth:
+        template_file: http/default.conf.j2
+        conf_file_name: net-worth
+        conf_file_location: /etc/nginx/sites-available
+        servers:
+          server1:
+            listen:
+              listen_localhost:
+                port: 80
+            reverse_proxy:
+              locations:
+                backend:
+                  location: /
+                  proxy_pass: "http://127.0.0.1:8000"
+            server_name: "net-worth.{{ server_name }}"
             error_page: /usr/share/nginx/html
             autoindex: false
 

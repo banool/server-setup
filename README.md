@@ -8,6 +8,11 @@ The plan of this repo is to set up all of my websites and services with Docker a
 ## Expected conditions of the remote server to begin with
 - A user called `daniel` with sudo power exists with SSH key based access already set up
 
+## Roles
+```
+ansible-galaxy install nginxinc.nginx
+```
+
 ## Run these commands on the control host
 ```
 export ANSIBLE_CONFIG=ansible.cfg
