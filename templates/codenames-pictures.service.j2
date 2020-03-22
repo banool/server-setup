@@ -1,0 +1,24 @@
+
+[Unit]
+Description=Codenames Pictures Podman Container
+After=network.target
+
+[Service]
+Type=simple
+TimeoutStartSec=10s
+ExecStartPre=-/usr/bin/podman rm "codenames-pictures"
+User={{ unix_user }}
+
+ExecStart=/usr/bin/podman run -t -a stdout -a stderr \
+  --network host \
+  --publish 127.0.0.1:{{ external_port }}:{{ internal_port }} \
+  --name codenames-pictures codenames-pictures
+
+
+ExecReload=-/usr/bin/podman stop "codenames-pictures"
+ExecReload=-/usr/bin/podman rm "codenames-pictures"
+ExecStop=-/usr/bin/podman stop "codenames-pictures"
+Restart=always
+RestartSec=30
+
+[Install]

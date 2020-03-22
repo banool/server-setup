@@ -2,6 +2,8 @@
 The plan of this repo is to set up all of my websites and services with Docker and Ansible. I have done automated server set up before in [my previous server-setup](https://github.com/banool/server-setup-old) repo, but that was all just janky shell scripts. Here we go!
 
 ## How to use
+Firstly, you need to set a million variables in vars.json. See fake_vars.json to see what kvs you need.
+
 ```
 export ANSIBLE_CONFIG=ansible.cfg
 ansible-galaxy install nginxinc.nginx
@@ -14,6 +16,8 @@ Similarly, this playbook will make testing and whatnot easier (it opens ports to
 ```
 ansible-playbook -i hosts open_dev_ports.yaml
 ```
+
+**Note:** To make this production ready, make sure to set development_mode to prod in vars.json
 
 ## Most useful resources
 - https://docs.ansible.com/ansible/latest/user_guide/playbooks_intro.html

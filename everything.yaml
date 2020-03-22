@@ -120,6 +120,38 @@
       state: restarted
 
 - hosts: webservers
+  name: Install Codenames Pictures site
+  tags:
+    - codenames_pictures
+  vars:
+    unix_user: "{{ unix_user }}"
+  tasks:
+  - name: Pull codenames-pictures image
+    podman_image:
+      name: quay.io/banool/codenames-pictures
+      tag: latest
+  - name: Actually repull codenames-pictures image
+    command: podman pull quay.io/banool/codenames-pictures
+  - name: Create systemd spec file
+    become: yes
+    vars:
+      internal_port: "{{ codenames_pictures.internal_port }}"
+      external_port: "{{ codenames_pictures.external_port }}"
+    template:
+      src: templates/codenames-pictures.service.j2
+      dest: /etc/systemd/system/codenames-pictures.service
+      owner: "{{ unix_user }}"
+      group: wheel
+      mode: '0644'
+  - name: Start and enable codenames-pictures service
+    become: yes
+    systemd:
+      name: codenames-pictures
+      daemon_reload: true
+      enabled: true
+      state: restarted
+
+- hosts: webservers
   name: Install dport site
   tags:
     - dport
@@ -190,8 +222,25 @@
               locations:
                 backend:
                   location: /
-                  proxy_pass: "http://127.0.0.1:8000"
+                  proxy_pass: "http://127.0.0.1:{{ net_worth.internal_port }}"
             server_name: "net-worth.{{ server_name }}"
+            error_page: /usr/share/nginx/html
+            autoindex: false
+      codenames-pictures:
+        template_file: http/default.conf.j2
+        conf_file_name: codenames-pictures
+        conf_file_location: /etc/nginx/sites-available
+        servers:
+          server1:
+            listen:
+              listen_localhost:
+                port: 80
+            reverse_proxy:
+              locations:
+                backend:
+                  location: /
+                  proxy_pass: "http://127.0.0.1:{{ codenames_pictures.internal_port}}"
+            server_name: "codenames-pictures.{{ server_name }} codenames.{{ server_name }}"
             error_page: /usr/share/nginx/html
             autoindex: false
 
