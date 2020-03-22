@@ -244,6 +244,42 @@
             error_page: /usr/share/nginx/html
             autoindex: false
 
+
+- hosts: webservers
+  name: Setup https
+  tags:
+    - https
+  tasks:
+    - name: Get public IP of this host
+      command: "dig -4 @resolver1.opendns.com ANY myip.opendns.com +short"
+      register: public_ip
+    - name: Get IP of domain
+      command: "dig -4 +short {{ server_name }}"
+      register: domain_ip
+    - name: Print debug success when both IPs are the same
+      debug: 
+        msg: "Public IP: {{ public_ip.stdout }} Domain IP: {{ domain_ip.stdout }}" 
+    - name: Confirm both IPs the same
+      fail:
+        msg: The public IP of the host and the IP of the domain are not the same
+      when: public_ip.stdout != domain_ip.stdout
+    - name: Print debug success when both IPs are the same
+      debug: 
+        msg: The public IP of the host and the IP of the domain are the same, hopefully this means your DNS records are correct. Also think about NAT. Proceeding with https
+    - name: Get certbot
+      become: yes
+      command: wget https://dl.eff.org/certbot-auto && mv certbot-auto /usr/local/bin/certbot-auto && chown root /usr/local/bin/certbot-auto && chmod 0755 /usr/local/bin/certbot-auto
+    - name: Run certbot
+      become: yes
+      command: /usr/local/bin/certbot-auto --nginx
+    - name: Put autorenew in crontab
+      cron:
+        name: "autorenew certs with cerbot"
+        minute: "0"
+        hour: "2"
+        job: "/usr/local/bin/certbot-auto renew -q"
+
+
 # TODO
 # Nginx
 # All other sites
