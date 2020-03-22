@@ -111,7 +111,6 @@
       state: present
       login_user: "{{ mysql_user }}"
       login_password: "{{ mysql_password }}"
-      
   - name: Start and enable net-worth service
     become: yes
     systemd:
@@ -199,6 +198,7 @@
 # TODO
 # Nginx
 # All other sites
+# #https
 # Crons
 # Deluge
 # Plex

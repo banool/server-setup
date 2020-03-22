@@ -1,0 +1,18 @@
+---
+- hosts: webservers
+  name: First phase of net-worth 2fa setup
+  tags:
+    - interactive
+  tasks:
+    - name: First phase of net-worth 2fa setup
+      shell: podman exec net-worth python manage.py initiate_2fa
+
+- hosts: webservers
+  vars_prompt:
+    - name: code
+      prompt: "Personal capital 2fa code you just received via SMS"
+      private: no
+  tasks:
+    - name: Second phase of net-worth 2fa setup
+      command: podman exec net-worth python manage.py finalise_2fa "{{ code }}"
+

@@ -10,7 +10,7 @@ ExecStartPre=-/usr/bin/podman rm "net-worth"
 User={{ unix_user }}
 
 ExecStart=/usr/bin/podman run -t -a stdout -a stderr \
-  -e allowed_sites='{{ allowed_sites }}' \
+  -e allowed_hosts='{{ allowed_hosts }}' \
   -e deployment_mode='{{ deployment_mode }}' \
   -e secret_key='{{ secret_key }}' \
   -e sql_engine='{{ sql_engine }}' \

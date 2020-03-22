@@ -4,7 +4,7 @@
     "mysql_password": "fakefake123^^^",
     "net_worth": {
         "secret_key": "fakefkaekfafkeakfekafkekfekf",
-        "allowed_sites": "127.0.0.1,0.0.0.0",
+        "allowed_hosts": "127.0.0.1,0.0.0.0",
         "deployment_mode": "dev",
         "sql_engine": "django.db.backends.mysql",
         "sql_database": "net_worth",
