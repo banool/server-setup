@@ -6,10 +6,10 @@ After=network.target
 [Service]
 Type=simple
 TimeoutStartSec=10s
-ExecStartPre=-/usr/bin/podman rm "net-worth"
+ExecStartPre=-/usr/bin/docker rm "net-worth"
 User={{ unix_user }}
 
-ExecStart=/usr/bin/podman run -t -a stdout -a stderr \
+ExecStart=/usr/bin/docker run -t -a stdout -a stderr \
   -e allowed_hosts='{{ allowed_hosts }}' \
   -e deployment_mode='{{ deployment_mode }}' \
   -e secret_key='{{ secret_key }}' \
@@ -27,14 +27,15 @@ ExecStart=/usr/bin/podman run -t -a stdout -a stderr \
   -e ui_username='{{ ui_username }}' \
   -e ui_password='{{ ui_password }}' \
   -e ui_email='{{ ui_email }}' \
+  -e coinmarketcap_api_key='{{ coinmarketcap_api_key }}' \
   --network host \
-  --publish 127.0.0.1:{{ external_port }}:{{ internal_port }} \
-  --name net-worth net-worth
+  -v /home/daniel/.ssh:/root/.ssh \
+  --name net-worth quay.io/banool/net-worth:latest
 
 
-ExecReload=-/usr/bin/podman stop "net-worth"
-ExecReload=-/usr/bin/podman rm "net-worth"
-ExecStop=-/usr/bin/podman stop "net-worth"
+ExecReload=-/usr/bin/docker stop "net-worth"
+ExecReload=-/usr/bin/docker rm "net-worth"
+ExecStop=-/usr/bin/docker stop "net-worth"
 Restart=always
 RestartSec=30
 
