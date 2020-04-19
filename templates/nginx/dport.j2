@@ -1,0 +1,41 @@
+server {
+        server_name {{ server_name }} www.{{ server_name }};
+
+        root /var/www/dport;
+
+        # Add index.php to the list if you are using PHP
+        index index.html index.htm;
+
+        location / {
+                # First attempt to serve request as file, then
+                # as directory, then fall back to displaying a 404.
+                try_files $uri $uri/ =404;
+        }
+
+        location /images/codenames_original {
+            autoindex on;
+        }
+
+        location /assets/hand_drawn_codenames_pictures {
+            autoindex on;
+        }
+
+        location /images/flowers {
+            autoindex on;
+        }
+
+        location /dnd {
+            autoindex on;
+        }
+
+        location /flowers {
+            return 301 /images/flowers;
+        }
+
+        # deny access to .htaccess files, if Apache's document root
+        # concurs with nginx's one
+        #
+        location ~ /\.ht {
+                deny all;
+        }
+}

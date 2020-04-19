@@ -1,0 +1,67 @@
+server {
+        server_name dport.me www.dport.me;
+
+        root /var/www/dport;
+
+        # Add index.php to the list if you are using PHP
+        index index.html index.htm;
+
+        location / {
+                # First attempt to serve request as file, then
+                # as directory, then fall back to displaying a 404.
+                try_files $uri $uri/ =404;
+        }
+
+        location /images/codenames_original {
+            autoindex on;
+        }
+
+        location /assets/hand_drawn_codenames_pictures {
+            autoindex on;
+        }
+
+        location /images/flowers {
+            autoindex on;
+        }
+
+        location /dnd {
+            autoindex on;
+        }
+
+        location /flowers {
+            return 301 /images/flowers;
+        }
+
+        # deny access to .htaccess files, if Apache's document root
+        # concurs with nginx's one
+        #
+        location ~ /\.ht {
+                deny all;
+        }
+
+	listen 443 ssl;
+
+
+    ssl_certificate /etc/letsencrypt/live/dport.me/fullchain.pem; # managed by Certbot
+    ssl_certificate_key /etc/letsencrypt/live/dport.me/privkey.pem; # managed by Certbot
+
+}
+server {
+    if ($host = www.dport.me) {
+        return 301 https://$host$request_uri;
+    } # managed by Certbot
+
+
+    if ($host = dport.me) {
+        return 301 https://$host$request_uri;
+    } # managed by Certbot
+
+
+        listen 80;
+        server_name dport.me www.dport.me;
+    return 404; # managed by Certbot
+
+
+
+
+}

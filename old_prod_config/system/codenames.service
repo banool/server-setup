@@ -1,0 +1,12 @@
+[Unit]
+Description=Codenames Pictures server
+
+[Service]
+User=daniel
+Group=www-data
+WorkingDirectory=/home/daniel/.go/bin
+ExecStart=/home/daniel/.go/bin/codenames
+Restart=always
+
+[Install]
+WantedBy=multi-user.target

@@ -8,7 +8,6 @@ Firstly, you need to set a million variables in vars.json. See fake_vars.json to
 pipenv install
 pipenv shell
 export ANSIBLE_CONFIG=ansible.cfg
-ansible-galaxy install nginxinc.nginx
 ansible-playbook -i hosts everything.yaml --extra-vars "@vars.json"
 ansible-playbook -i hosts interactive.yaml 
 ```

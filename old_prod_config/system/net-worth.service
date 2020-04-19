@@ -1,0 +1,43 @@
+
+[Unit]
+Description=Net Worth Podman Container
+After=network.target
+
+[Service]
+Type=simple
+TimeoutStartSec=10s
+ExecStartPre=-/usr/bin/docker rm "net-worth"
+User=daniel
+
+ExecStart=/usr/bin/docker run -t -a stdout -a stderr \
+  -e allowed_hosts='net-worth.dport.me,0.0.0.0,127.0.0.1' \
+  -e deployment_mode='prod' \
+  -e secret_key='pmff@3gvk3*x@*gp^8fv3s342vts0wt6s' \
+  -e sql_engine='django.db.backends.mysql' \
+  -e sql_database='net_worth' \
+  -e sql_user='nwu' \
+  -e sql_password='stratakis5991dp1035' \
+  -e sql_host='127.0.0.1' \
+  -e sql_port='3306' \
+  -e robinhood_username='debdanmeg@live.com.au' \
+  -e robinhood_password='8k7yStNZtdAJ' \
+  -e robinhood_2fa_barcode='TCFWDASLFNA4U7AP' \
+  -e personal_capital_email='debdanmeg@live.com.au' \
+  -e personal_capital_password='*0a1F8uj2^g@' \
+  -e ui_username='daniel' \
+  -e ui_password='hX36^ZSQ*GhN*n@' \
+  -e ui_email='danielporteous1@gmail.com' \
+  -e coinmarketcap_api_key='90311426-ac47-4a33-851a-c82c3ebc6bc5' \
+  --network host \
+  -v /home/daniel/.ssh:/root/.ssh \
+  --name net-worth quay.io/banool/net-worth:latest
+
+
+ExecReload=-/usr/bin/docker stop "net-worth"
+ExecReload=-/usr/bin/docker rm "net-worth"
+ExecStop=-/usr/bin/docker stop "net-worth"
+Restart=always
+RestartSec=30
+RuntimeMaxSec=43200
+
+[Install]

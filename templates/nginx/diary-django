@@ -1,0 +1,31 @@
+server {
+    server_name diary.dport.me;
+
+    location = /favicon.ico { access_log off; log_not_found off; }
+    location /static/ {
+        root /var/www/diary-django/diary;
+    }
+
+    location / {
+        include proxy_params;
+        proxy_pass http://unix:/var/www/diary-django/diary.sock;
+    }
+
+    listen 443 ssl; # managed by Certbot
+    ssl_certificate /etc/letsencrypt/live/diary.dport.me/fullchain.pem; # managed by Certbot
+    ssl_certificate_key /etc/letsencrypt/live/diary.dport.me/privkey.pem; # managed by Certbot
+    include /etc/letsencrypt/options-ssl-nginx.conf; # managed by Certbot
+    ssl_dhparam /etc/letsencrypt/ssl-dhparams.pem; # managed by Certbot
+
+}server {
+    if ($host = diary.dport.me) {
+        return 301 https://$host$request_uri;
+    } # managed by Certbot
+
+
+    listen 80;
+    server_name diary.dport.me;
+    return 404; # managed by Certbot
+
+
+}

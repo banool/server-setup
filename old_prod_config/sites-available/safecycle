@@ -1,0 +1,44 @@
+server {
+        server_name safecycle.dport.me;
+
+        root /var/www/safecycle/web;
+
+        # Add index.php to the list if you are using PHP
+        index index.html index.htm index.nginx-debian.html;
+
+        location / {
+                try_files $uri $uri/ =404;
+        }
+
+        # deny access to .htaccess files, if Apache's document root
+        # concurs with nginx's one
+        #
+        location ~ /\.ht {
+                deny all;
+        }
+
+        # Pass off the handler to Apache.
+        location /handler {
+                proxy_pass http://127.0.0.1:8080;
+        }
+
+
+    listen 443 ssl; # managed by Certbot
+    ssl_certificate /etc/letsencrypt/live/safecycle.dport.me/fullchain.pem; # managed by Certbot
+    ssl_certificate_key /etc/letsencrypt/live/safecycle.dport.me/privkey.pem; # managed by Certbot
+    include /etc/letsencrypt/options-ssl-nginx.conf; # managed by Certbot
+    ssl_dhparam /etc/letsencrypt/ssl-dhparams.pem; # managed by Certbot
+
+}
+server {
+    if ($host = safecycle.dport.me) {
+        return 301 https://$host$request_uri;
+    } # managed by Certbot
+
+
+        listen 80;
+        server_name safecycle.dport.me;
+    return 404; # managed by Certbot
+
+
+}

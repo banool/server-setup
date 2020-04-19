@@ -1,0 +1,21 @@
+[Unit]
+Description=Pants server
+
+[Service]
+User=daniel
+Group=www-data
+WorkingDirectory=/var/www/pants
+ExecStart=/home/daniel/.cargo/bin/cargo run --release
+Restart=always
+
+Environment=PANTS_PAGES_ROOT="/var/www/dport/pages"
+Environment=PANTS_SITE="https://dport.me"
+Environment=PANTS_CONSUMER_KEY="87796-6bf78d700933260a0f9b1b97"
+Environment=PANTS_ACCESS_TOKEN="d48c7af9-2450-de18-3e9c-9065f5"
+Environment=PANTS_STATIC_ROOT="static"
+Environment=ROCKET_PORT=8765
+Environment=ROCKET_ADDRESS=0.0.0.0
+Environment=ROCKET_SECRET_KEY="Ebbudtp1ttI8NMwDc54kQB1tStVV7KVp7L9Q1UTZ8/U="
+
+[Install]
+WantedBy=multi-user.target

@@ -1,0 +1,15 @@
+[Unit]
+Description=Gunicorn daemon for diary-django
+After=network.target
+
+[Install]
+WantedBy=multi-user.target
+
+[Service]
+User=daniel
+Group=www-data
+WorkingDirectory=/var/www/diary-django
+# https://stackoverflow.com/questions/23733059/the-secret-key-setting-must-not-be-empty
+# ExecStart is added by diary.sh.
+
+ExecStart=/var/www/diary-django/myvenv/bin/gunicorn --access-logfile - --workers 3  --bind unix:/var/www/diary-django/diary.sock diary.wsgi:application --env DJANGO_SETTINGS_MODULE='diary.settings.settings_prod' --env DB_NAME='diarydjango' --env DB_USER='diaryuser' --env DB_PASS='pass1234changedbb' --env SECRET_KEY='fasdfdsajkfdhsfkjldshafjksdhfkjadshfkjfdasgfjkhgfiu'

@@ -1,0 +1,10 @@
+[Unit]
+Description=Dynamic DNS Update Client
+
+[Service]
+Type=oneshot
+ExecStart=/usr/sbin/ddclient --force
+
+[Install]
+WantedBy=multi-user.target
+

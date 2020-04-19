@@ -1,0 +1,12 @@
+[Unit]
+Description=COMP30023 Mastermind Server
+
+[Service]
+User=daniel
+Group=www-data
+WorkingDirectory=/var/www/mastermind
+ExecStart=/var/www/mastermind/server 12340
+Restart=always
+
+[Install]
+WantedBy=multi-user.target

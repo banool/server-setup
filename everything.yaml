@@ -29,6 +29,11 @@
       command: setenforce 0
     - name: Add github.com as known host
       shell: ssh-keyscan -H github.com >> "{{ ansible_env.HOME }}/.ssh/known_hosts"
+    - name: Install nginx
+      become: yes
+      dnf:
+        name:
+          - nginx
 
 - hosts: webservers
   become: true
@@ -59,6 +64,26 @@
         daemon_reload: true
         enabled: true
         state: restarted
+    - name: Enable http in firewalld
+      firewalld:
+        service: http
+        permanent: yes
+        state: enabled
+    - name: Enable https in firewalld
+      firewalld:
+        service: https
+        permanent: yes
+        state: enabled
+    - name: Enable 25565-25568 in firewalld
+      firewalld:
+        port: 25565-25568/tcp
+        permanent: yes
+        state: enabled
+    - name: Enable 25565-25568 in firewalld
+      firewalld:
+        port: 25565-25568/udp
+        permanent: yes
+        state: enabled
 
 - hosts: dbservers
   name: Install MySQL 8
@@ -131,7 +156,7 @@
       internal_port: "{{ net_worth.internal_port }}"
       external_port: "{{ net_worth.external_port }}"
     template:
-      src: templates/net-worth.service.j2
+      src: templates/systemd/net-worth.service.j2
       dest: /etc/systemd/system/net-worth.service
       owner: "{{ unix_user }}"
       group: "root"
@@ -169,7 +194,7 @@
       internal_port: "{{ codenames_pictures.internal_port }}"
       external_port: "{{ codenames_pictures.external_port }}"
     template:
-      src: templates/codenames-pictures.service.j2
+      src: templates/systemd/codenames-pictures.service.j2
       dest: /etc/systemd/system/codenames-pictures.service
       owner: "{{ unix_user }}"
       group: wheel
@@ -192,6 +217,15 @@
     - git:
         repo: git@github.com:banool/dport-site.git
         dest: /var/www/dport
+
+- hosts: webservers
+  name: Install taxdefence site
+  tags:
+    - taxdefence
+  tasks:
+    - git:
+        repo: git@github.com:banool/taxdefence.git
+        dest: /var/www/taxdefence
 
 - hosts: webservers
   name: Install bunkopepi site
@@ -221,6 +255,48 @@
         dest: /var/www/internode
 
 - hosts: webservers
+  name: Setup sites with nginx
+  tags:
+    - nginx
+    - sites
+  vars:
+    server_name: "{{ server_name }}"
+  tasks:
+    - name: Create internode nginx config file
+      become: yes
+      template:
+        src: templates/nginx/internode.j2
+        dest: /etc/nginx/sites-enabled/internode
+        owner: "{{ unix_user }}"
+        group: "root"
+        mode: '0644'
+    - name: Create dport nginx config file
+      become: yes
+      template:
+        src: templates/nginx/dport.j2
+        dest: /etc/nginx/sites-enabled/dport
+        owner: "{{ unix_user }}"
+        group: "root"
+        mode: '0644'
+    - name: Create net-worth nginx config file
+      become: yes
+      template:
+        src: templates/nginx/net-worth.j2
+        dest: /etc/nginx/sites-enabled/net-worth
+        owner: "{{ unix_user }}"
+        group: "root"
+        mode: '0644'
+    - name: Create bunkopepi nginx config file
+      become: yes
+      template:
+        src: templates/nginx/bunkopepi.j2
+        dest: /etc/nginx/sites-enabled/bunkopepi
+        owner: "{{ unix_user }}"
+        group: "root"
+        mode: '0644'
+
+
+- hosts: webservers
   name: Setup https
   tags:
     - https
@@ -243,10 +319,10 @@
         msg: The public IP of the host and the IP of the domain are the same, hopefully this means your DNS records are correct. Also think about NAT. Proceeding with https
     - name: Get certbot
       become: yes
-      command: wget https://dl.eff.org/certbot-auto && mv certbot-auto /usr/local/bin/certbot-auto && chown root /usr/local/bin/certbot-auto && chmod 0755 /usr/local/bin/certbot-auto
+      shell: wget https://dl.eff.org/certbot-auto && mv certbot-auto /usr/local/bin/certbot-auto && chown root /usr/local/bin/certbot-auto && chmod 0755 /usr/local/bin/certbot-auto
     - name: Run certbot
       become: yes
-      command: /usr/local/bin/certbot-auto --nginx
+      command: /usr/local/bin/certbot-auto --nginx -n --agree-tos --email {{ email }} --domains {{ domains }}
     - name: Put autorenew in crontab
       cron:
         name: "autorenew certs with cerbot"

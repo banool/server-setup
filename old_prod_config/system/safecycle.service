@@ -1,0 +1,12 @@
+[Unit]
+Description=Safecycle Python Server
+
+[Service]
+User=daniel
+Group=www-data
+WorkingDirectory=/var/www/safecycle/scripts
+ExecStart=/var/www/safecycle/myvenv/bin/python /var/www/safecycle/scripts/server.py
+Restart=always
+
+[Install]
+WantedBy=multi-user.target

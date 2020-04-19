@@ -1,0 +1,12 @@
+[Unit]
+Description=Trapwords Server
+
+[Service]
+User=daniel
+Group=www-data
+WorkingDirectory=/home/daniel/.go/bin
+ExecStart=/home/daniel/.go/bin/trapwords 9002
+Restart=always
+
+[Install]
+WantedBy=multi-user.target

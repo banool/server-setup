@@ -1,0 +1,16 @@
+server {
+        server_name bunkopepi.{{ server_name }};
+
+        root /var/www/bunkopepi/html;
+
+        # Add index.php to the list if you are using PHP
+        index index.html index.htm;
+
+        location / {
+                try_files $uri $uri/ =404;
+        }
+
+        location ~ /\.ht {
+                deny all;
+        }
+}

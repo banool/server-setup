@@ -1,0 +1,37 @@
+server {
+        server_name gomogo.dport.me;
+
+        location / {
+            proxy_pass http://localhost:5000;
+        }
+
+        location /handler {
+            proxy_pass http://localhost:5001;
+        }
+
+        # deny access to .htaccess files, if Apache's document root
+        # concurs with nginx's one
+        #
+        location ~ /\.ht {
+                deny all;
+        }
+
+    listen 443 ssl; # managed by Certbot
+    ssl_certificate /etc/letsencrypt/live/gomogo.dport.me/fullchain.pem; # managed by Certbot
+    ssl_certificate_key /etc/letsencrypt/live/gomogo.dport.me/privkey.pem; # managed by Certbot
+    include /etc/letsencrypt/options-ssl-nginx.conf; # managed by Certbot
+    ssl_dhparam /etc/letsencrypt/ssl-dhparams.pem; # managed by Certbot
+
+}
+server {
+    if ($host = gomogo.dport.me) {
+        return 301 https://$host$request_uri;
+    } # managed by Certbot
+
+
+        listen 80;
+        server_name gomogo.dport.me;
+    return 404; # managed by Certbot
+
+
+}

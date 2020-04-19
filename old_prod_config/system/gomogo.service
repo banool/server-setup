@@ -1,0 +1,12 @@
+[Unit]
+Description=Gomogo Python Server
+
+[Service]
+User=daniel
+Group=www-data
+WorkingDirectory=/var/www/gomogo/server/data
+ExecStart=/var/www/gomogo/server/data/myserver.py
+Restart=always
+
+[Install]
+WantedBy=multi-user.target
