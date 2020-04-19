@@ -72,11 +72,11 @@
     unix_user: "{{ unix_user }}"
   tasks:
   - name: Pull net-worth image
-    docker_image:
+    podman_image:
       name: quay.io/banool/net-worth
       tag: latest
   - name: Actually repull net-worth image
-    command: docker pull quay.io/banool/net-worth
+    command: podman pull quay.io/banool/net-worth
   - name: Create systemd spec file
     become: yes
     vars:

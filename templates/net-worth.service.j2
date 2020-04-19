@@ -6,10 +6,10 @@ After=network.target
 [Service]
 Type=simple
 TimeoutStartSec=10s
-ExecStartPre=-/usr/bin/docker rm "net-worth"
+ExecStartPre=-/usr/bin/podman rm "net-worth"
 User={{ unix_user }}
 
-ExecStart=/usr/bin/docker run -t -a stdout -a stderr \
+ExecStart=/usr/bin/podman run -t -a stdout -a stderr \
   -e allowed_hosts='{{ allowed_hosts }}' \
   -e deployment_mode='{{ deployment_mode }}' \
   -e secret_key='{{ secret_key }}' \
@@ -33,9 +33,9 @@ ExecStart=/usr/bin/docker run -t -a stdout -a stderr \
   --name net-worth quay.io/banool/net-worth:latest
 
 
-ExecReload=-/usr/bin/docker stop "net-worth"
-ExecReload=-/usr/bin/docker rm "net-worth"
-ExecStop=-/usr/bin/docker stop "net-worth"
+ExecReload=-/usr/bin/podman stop "net-worth"
+ExecReload=-/usr/bin/podman rm "net-worth"
+ExecStop=-/usr/bin/podman stop "net-worth"
 Restart=always
 RestartSec=30
 RuntimeMaxSec=43200

@@ -5,7 +5,7 @@
     - interactive
   tasks:
     - name: First phase of net-worth 2fa setup
-      shell: docker exec net-worth python manage.py initiate_2fa
+      shell: podman exec net-worth python manage.py initiate_2fa
 
 - hosts: webservers
   vars_prompt:
@@ -14,5 +14,5 @@
       private: no
   tasks:
     - name: Second phase of net-worth 2fa setup
-      command: docker exec net-worth python manage.py finalise_2fa "{{ code }}"
+      command: podman exec net-worth python manage.py finalise_2fa "{{ code }}"
 
