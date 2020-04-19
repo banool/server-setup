@@ -72,11 +72,11 @@
     unix_user: "{{ unix_user }}"
   tasks:
   - name: Pull net-worth image
-    podman_image:
+    docker_image:
       name: quay.io/banool/net-worth
       tag: latest
   - name: Actually repull net-worth image
-    command: podman pull quay.io/banool/net-worth
+    command: docker pull quay.io/banool/net-worth
   - name: Create systemd spec file
     become: yes
     vars:
@@ -97,13 +97,14 @@
       ui_username: "{{ net_worth.ui_username }}"
       ui_email: "{{ net_worth.ui_email }}"
       ui_password: "{{ net_worth.ui_password }}"
+      coinmarketcap_api_key: "{{ net_worth.coinmarketcap_api_key }}"
       internal_port: "{{ net_worth.internal_port }}"
       external_port: "{{ net_worth.external_port }}"
     template:
       src: templates/net-worth.service.j2
       dest: /etc/systemd/system/net-worth.service
       owner: "{{ unix_user }}"
-      group: wheel
+      group: "root"
       mode: '0644'
   - name: Make net worth database in MySQL
     mysql_db:
@@ -161,6 +162,33 @@
     - git:
         repo: git@github.com:banool/dport-site.git
         dest: /var/www/dport
+
+- hosts: webservers
+  name: Install bunkopepi site
+  tags:
+    - bunkopepi
+  tasks:
+    - git:
+        repo: git@github.com:banool/bunkopepi.git
+        dest: /var/www/bunkopepi
+
+- hosts: webservers
+  name: Install bunkopepi site
+  tags:
+    - bunkopepi
+  tasks:
+    - git:
+        repo: git@github.com:banool/bunkopepi.git
+        dest: /var/www/bunkopepi
+
+- hosts: webservers
+  name: Install internode site
+  tags:
+    - internode
+  tasks:
+    - git:
+        repo: git@github.com:banool/adport-internode.git
+        dest: /var/www/internode
 
 - hosts: webservers
   become: true

@@ -1,5 +1,5 @@
 [webservers]
-daniel@192.168.86.47 ansible_python_interpreter=/usr/bin/python3
+daniel@192.168.86.2 ansible_python_interpreter=/usr/bin/python3
 
 [dbservers]
-daniel@192.168.86.47 ansible_python_interpreter=/usr/bin/python3
+daniel@192.168.86.2 ansible_python_interpreter=/usr/bin/python3
