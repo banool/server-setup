@@ -330,6 +330,15 @@
         hour: "2"
         job: "/usr/local/bin/certbot-auto renew -q"
 
+- hosts: webservers
+  name: Final touches
+  tags:
+    - final
+  tasks:
+    - name: Turn off screen
+      become: yes
+      shell: "echo 0 | sudo tee /sys/class/backlight/intel_backlight/brightness"
+
 
 # TODO
 # Nginx

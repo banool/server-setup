@@ -27,3 +27,6 @@ ansible-playbook -i hosts open_dev_ports.yaml
 ## Expected conditions of the remote server to begin with
 - A user called `daniel` with sudo power exists with SSH key based access already set up
 
+## Other useful stuff
+See the `/sys/` related answer [at this link](https://askubuntu.com/questions/149054)
+to decrease the brightness / turn off the screen.
