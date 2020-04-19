@@ -30,6 +30,36 @@
     - name: Add github.com as known host
       shell: ssh-keyscan -H github.com >> "{{ ansible_env.HOME }}/.ssh/known_hosts"
 
+- hosts: webservers
+  become: true
+  tags: nginx
+  tasks:
+    - name: Make /etc/nginx/sites-available
+      file:
+        path: /etc/nginx/sites-available
+        state: directory
+        mode: '0755'
+    - name: Make symlink for sites-available called sites-enabled
+      file:
+        src: /etc/nginx/sites-available
+        dest: /etc/nginx/sites-enabled
+        state: link
+    - name: Delete /etc/nginx/conf.d
+      file:
+        path: /etc/nginx/conf.d
+        state: absent
+    - name: Use sites-enabled instead of conf.d
+      replace:
+        path: /etc/nginx/nginx.conf
+        regexp: 'include /etc/nginx/conf.d/\*.conf;'
+        replace: 'include /etc/nginx/sites-enabled/*;'
+    - name: Restart nginx
+      systemd:
+        name: nginx
+        daemon_reload: true
+        enabled: true
+        state: restarted
+
 - hosts: dbservers
   name: Install MySQL 8
   tags:
@@ -189,89 +219,6 @@
     - git:
         repo: git@github.com:banool/adport-internode.git
         dest: /var/www/internode
-
-- hosts: webservers
-  become: true
-  roles:
-    - role: nginxinc.nginx
-  tags: nginx
-  tasks:
-    - name: Make /etc/nginx/sites-available
-      file:
-        path: /etc/nginx/sites-available
-        state: directory
-        mode: '0755'
-    - name: Make symlink for sites-available called sites-enabled
-      file:
-        src: /etc/nginx/sites-available
-        dest: /etc/nginx/sites-enabled
-        state: link
-    - name: Delete /etc/nginx/conf.d
-      file:
-        path: /etc/nginx/conf.d
-        state: absent
-    - name: Use sites-enabled instead of conf.d
-      replace:
-        path: /etc/nginx/nginx.conf
-        regexp: 'include /etc/nginx/conf.d/\*.conf;'
-        replace: 'include /etc/nginx/sites-enabled/*;'
-    - name: Restart nginx
-      systemd:
-        name: nginx
-        daemon_reload: true
-        enabled: true
-        state: restarted
-  vars:
-    nginx_http_template_enable: true
-    nginx_http_template:
-      dport:
-        template_file: http/default.conf.j2
-        conf_file_name: dport
-        conf_file_location: /etc/nginx/sites-available
-        servers:
-          server1:
-            listen:
-              listen_localhost:
-                port: 80
-            root: /var/www/dport
-            server_name: "{{ server_name }} www.{{ server_name }} {{ ip_address }}"
-            error_page: /usr/share/nginx/html
-            autoindex: false
-      net-worth:
-        template_file: http/default.conf.j2
-        conf_file_name: net-worth
-        conf_file_location: /etc/nginx/sites-available
-        servers:
-          server1:
-            listen:
-              listen_localhost:
-                port: 80
-            reverse_proxy:
-              locations:
-                backend:
-                  location: /
-                  proxy_pass: "http://127.0.0.1:{{ net_worth.internal_port }}"
-            server_name: "net-worth.{{ server_name }}"
-            error_page: /usr/share/nginx/html
-            autoindex: false
-      codenames-pictures:
-        template_file: http/default.conf.j2
-        conf_file_name: codenames-pictures
-        conf_file_location: /etc/nginx/sites-available
-        servers:
-          server1:
-            listen:
-              listen_localhost:
-                port: 80
-            reverse_proxy:
-              locations:
-                backend:
-                  location: /
-                  proxy_pass: "http://127.0.0.1:{{ codenames_pictures.internal_port}}"
-            server_name: "codenames-pictures.{{ server_name }} codenames.{{ server_name }}"
-            error_page: /usr/share/nginx/html
-            autoindex: false
-
 
 - hosts: webservers
   name: Setup https
