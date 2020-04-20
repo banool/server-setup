@@ -29,6 +29,8 @@
       command: setenforce 0
     - name: Add github.com as known host
       shell: ssh-keyscan -H github.com >> "{{ ansible_env.HOME }}/.ssh/known_hosts"
+    - name: Add github personal access token to podman
+      shell: "echo {{ github_personal_access_token }} | podman login docker.pkg.github.com -u banool --password-stdin" 
     - name: Install nginx
       become: yes
       dnf:
@@ -126,6 +128,67 @@
         password: "{{ password }}"
         priv: '*.*:ALL'
         state: present
+
+- hosts: webservers
+  name: Install amaranta candles site
+  tags:
+    - amaranta_candles
+  tasks:
+  - name: Pull amaranta candles server image
+    command: podman pull docker.pkg.github.com/banool/amaranta_candles/amaranta_candles_server:latest
+  - name: Pull amaranta candles ui image
+    command: podman pull docker.pkg.github.com/banool/amaranta_candles/amaranta_candles_ui:latest
+  - name: Create server systemd spec file
+    become: yes
+    vars:
+      allowed_hosts: "{{ amaranta_candles.allowed_hosts }}"
+      deployment_mode: "{{ amaranta_candles.deployment_mode }}"
+      secret_key: "{{ amaranta_candles.secret_key }}"
+      sql_engine: "{{ amaranta_candles.sql_engine }}"
+      sql_database: "{{ amaranta_candles.sql_database }}"
+      sql_user: "{{ mysql_user }}"
+      sql_password: "{{ mysql_password}}"
+      sql_host: "{{ amaranta_candles.sql_host}}"
+      sql_port: "{{ amaranta_candles.sql_port}}"
+      ui_username: "{{ amaranta_candles.ui_username }}"
+      ui_email: "{{ amaranta_candles.ui_email }}"
+      ui_password: "{{ amaranta_candles.ui_password }}"
+      internal_port: "{{ amaranta_candles.internal_port }}"
+      external_port: "{{ amaranta_candles.external_port }}"
+    template:
+      src: templates/systemd/amaranta_candles_server.service.j2
+      dest: /etc/systemd/system/amaranta_candles_server.service
+      owner: "{{ unix_user }}"
+      group: "root"
+      mode: '0644'
+  - name: Create ui systemd spec file
+    become: yes
+    template:
+      src: templates/systemd/amaranta_candles_ui.service.j2
+      dest: /etc/systemd/system/amaranta_candles_ui.service
+      owner: "{{ unix_user }}"
+      group: "root"
+      mode: '0644'
+  - name: Make amaranta candles database in MySQL
+    mysql_db:
+      name: "{{ amaranta_candles.sql_database }}"
+      state: present
+      login_user: "{{ mysql_user }}"
+      login_password: "{{ mysql_password }}"
+  - name: Start and enable amaranta candles server service
+    become: yes
+    systemd:
+      name: amaranta_candles_server
+      daemon_reload: true
+      enabled: true
+      state: restarted
+  - name: Start and enable amaranta candles ui service
+    become: yes
+    systemd:
+      name: amaranta_candles_ui
+      daemon_reload: true
+      enabled: true
+      state: restarted
 
 - hosts: webservers
   name: Install Net Worth site
@@ -318,7 +381,14 @@
         owner: "{{ unix_user }}"
         group: "root"
         mode: '0644'
-
+    - name: Create amaranta candles nginx config file
+      become: yes
+      template:
+        src: templates/nginx/amaranta_candles.j2
+        dest: /etc/nginx/sites-enabled/amaranta_candles
+        owner: "{{ unix_user }}"
+        group: "root"
+        mode: '0644'
 
 - hosts: webservers
   name: Setup https

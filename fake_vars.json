@@ -1,1 +1,49 @@
-{"host_ssh_source": "fake", "unix_user": "fake", "mysql_user": "fake", "mysql_password": "fake", "net_worth": {"secret_key": "fake", "allowed_hosts": "fake", "deployment_mode": "fake", "internal_port": "fake", "external_port": "fake", "sql_engine": "fake", "sql_database": "fake", "sql_host": "fake", "sql_port": "fake", "robinhood_username": "fake", "robinhood_password": "fake", "robinhood_2fa_barcode": "fake", "personal_capital_email": "fake", "personal_capital_password": "fake", "ui_username": "fake", "ui_email": "fake", "ui_password": "fake"}, "codenames_pictures": {"internal_port": "fake", "external_port": "fake"}, "server_name": "fake", "ip_address": "fake"}
+{
+    "host_ssh_source": "fake",
+    "unix_user": "fake",
+    "email": "fake",
+    "mysql_user": "fake",
+    "mysql_password": "fake",
+    "net_worth": {
+        "secret_key": "fake",
+        "allowed_hosts": "fake",
+        "deployment_mode": "fake",
+        "internal_port": "fake",
+        "external_port": "fake",
+        "sql_engine": "fake",
+        "sql_database": "fake",
+        "sql_host": "fake",
+        "sql_port": "fake",
+        "robinhood_username": "fake",
+        "robinhood_password": "fake",
+        "robinhood_2fa_barcode": "fake",
+        "personal_capital_email": "fake",
+        "personal_capital_password": "fake",
+        "ui_username": "fake",
+        "ui_email": "fake",
+        "ui_password": "fake",
+        "coinmarketcap_api_key": "fake"
+    },
+    "codenames_pictures": {
+        "internal_port": "fake",
+        "external_port": "fake"
+    },
+    "amaranta_candles": {
+        "allowed_hosts": "fake",
+        "deployment_mode": "fake",
+        "secret_key": "fake",
+        "sql_engine": "fake",
+        "sql_database": "fake",
+        "sql_user": "fake",
+        "sql_password": "fake",
+        "sql_host": "fake",
+        "sql_port": "fake",
+        "ui_username": "fake",
+        "ui_password": "fake",
+        "ui_email": "fake"
+    },
+    "server_name": "fake",
+    "domains": "fake",
+    "ip_address": "fake",
+    "github_personal_access_token": "fake"
+}

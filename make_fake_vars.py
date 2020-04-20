@@ -1,4 +1,3 @@
-## YOUR CODE HERE
 import json
 
 with open("vars.json", "r") as f:
@@ -16,4 +15,4 @@ def blah(d):
 blah(d)
 
 with open('fake_vars.json', 'w') as f:
-    json.dump(d, f)
+    json.dump(d, f, indent=4)

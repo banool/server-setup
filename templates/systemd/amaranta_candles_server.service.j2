@@ -5,29 +5,28 @@ After=network.target
 [Service]
 Type=simple
 TimeoutStartSec=60s
-ExecStartPre=-/usr/bin/docker rm -f "amaranta_candles_server"
+ExecStartPre=-/usr/bin/podman rm -f "amaranta_candles_server"
 User=daniel
 
-ExecStart=/usr/bin/docker run -t -a stdout -a stderr \
-  -e allowed_hosts='127.0.0.1,0.0.0.0,192.168.86.47,candles.amaranta.house' \
-  -e deployment_mode='prod' \
-  -e secret_key='pmff@3gvk3*x@*gp^8fv3s342vts0wt6d' \
-  -e sql_engine='django.db.backends.mysql' \
-  -e sql_database='amaranta_candles' \
-  -e sql_user='amaranta_candles_user' \
-  -e sql_password='123sdf@ll11@@' \
-  -e sql_host='127.0.0.1' \
-  -e sql_port='3306' \
-  -e ui_username='candleadmin' \
-  -e ui_password='bigchungus' \
-  -e ui_email='danielporteous1@gmail.com' \
+ExecStart=/usr/bin/podman run -t -a stdout -a stderr \
+  -e allowed_hosts='{{ allowed_hosts }}' \
+  -e deployment_mode='{{ deployment_mode }}' \
+  -e secret_key='{{ secret_key }}' \
+  -e sql_engine='{{ sql_engine }}' \
+  -e sql_database='{{ sql_database }}' \
+  -e sql_user='{{ sql_user }}' \
+  -e sql_password='{{ sql_password }}' \
+  -e sql_host='{{ sql_host }}' \
+  -e sql_port='{{ sql_port }}' \
+  -e ui_username='{{ ui_username }}' \
+  -e ui_password='{{ ui_password }}' \
+  -e ui_email='{{ ui_email }}' \
   --network host \
   --name amaranta_candles_server docker.pkg.github.com/banool/amaranta_candles/amaranta_candles_server:latest
 
-
-ExecReload=-/usr/bin/docker stop "amaranta_candles_server"
-ExecReload=-/usr/bin/docker rm "amaranta_candles_server"
-ExecStop=-/usr/bin/docker stop "amaranta_candles_server"
+ExecReload=-/usr/bin/podman stop "amaranta_candles_server"
+ExecReload=-/usr/bin/podman rm "amaranta_candles_server"
+ExecStop=-/usr/bin/podman stop "amaranta_candles_server"
 Restart=always
 RestartSec=60
 
