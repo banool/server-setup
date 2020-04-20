@@ -1,0 +1,17 @@
+---
+- hosts: webservers
+  name: Pull images and restart containers
+  tags:
+    - net_worth
+  tasks:
+  - name: Repull net-worth image
+    command: podman pull quay.io/banool/net-worth
+  - name: Repull codenames-pictures image
+    command: podman pull quay.io/banool/codenames-pictures
+  - name: Repull amaranta candles server image
+    command: podman pull docker.pkg.github.com/banool/amaranta_candles/amaranta_candles_server
+  - name: Repull amaranta candles ui image
+    command: podman pull docker.pkg.github.com/banool/amaranta_candles/amaranta_candles_ui
+  - name: Restart container systemd jobs
+    become: yes
+    command: systemctl restart codenames-pictures net-worth amaranta_candles_ui amaranta_candles_server
