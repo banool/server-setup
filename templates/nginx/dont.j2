@@ -1,0 +1,15 @@
+server {
+        server_name dont.dport.me;
+
+        root /var/www/dont;
+
+        index index.html index.htm;
+
+        location / {
+                try_files $uri $uri/ =404;
+        }
+
+        location ~ /\.ht {
+                deny all;
+        }
+}

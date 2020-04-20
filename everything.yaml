@@ -326,6 +326,14 @@
         dest: /var/www/internode
 
 - hosts: webservers
+  name: Install dont site
+  tags:
+    - dont
+  tasks:
+    - name: Copy dont files in
+      copy: "src={{ lookup('env','PWD') }}/other_sites/dont dest=/var/www remote_src=no"
+
+- hosts: webservers
   name: Setup sites with nginx
   tags:
     - nginx
@@ -386,6 +394,14 @@
       template:
         src: templates/nginx/amaranta_candles.j2
         dest: /etc/nginx/sites-enabled/amaranta_candles
+        owner: "{{ unix_user }}"
+        group: "root"
+        mode: '0644'
+    - name: Create dont nginx config file
+      become: yes
+      template:
+        src: templates/nginx/dont.j2
+        dest: /etc/nginx/sites-enabled/dont
         owner: "{{ unix_user }}"
         group: "root"
         mode: '0644'
