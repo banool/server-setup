@@ -279,6 +279,36 @@
       state: restarted
 
 - hosts: webservers
+  name: Install Trapwords site
+  tags:
+    - trapwords
+  tasks:
+  - name: Pull trapwords image
+    podman_image:
+      name: quay.io/banool/trapwords
+      tag: latest
+  - name: Actually repull trapwords image
+    command: podman pull quay.io/banool/trapwords
+  - name: Create systemd spec file
+    become: yes
+    vars:
+      internal_port: "{{ trapwords.internal_port }}"
+      external_port: "{{ trapwords.external_port }}"
+    template:
+      src: templates/systemd/trapwords.service.j2
+      dest: /etc/systemd/system/trapwords.service
+      owner: "{{ unix_user }}"
+      group: wheel
+      mode: '0644'
+  - name: Start and enable trapwords service
+    become: yes
+    systemd:
+      name: trapwords
+      daemon_reload: true
+      enabled: true
+      state: restarted
+
+- hosts: webservers
   name: Install dport site
   tags:
     - dport
@@ -378,6 +408,14 @@
       template:
         src: templates/nginx/codenames.j2
         dest: /etc/nginx/sites-enabled/codenames
+        owner: "{{ unix_user }}"
+        group: "root"
+        mode: '0644'
+    - name: Create trapwords nginx config file
+      become: yes
+      template:
+        src: templates/nginx/trapwords.j2
+        dest: /etc/nginx/sites-enabled/trapwords
         owner: "{{ unix_user }}"
         group: "root"
         mode: '0644'

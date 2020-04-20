@@ -1,0 +1,22 @@
+server {
+        server_name trapwords.{{ server_name }};
+
+        location ~ /.well-known {
+                allow all;
+        }
+        location ~ /\. {
+                deny all;
+        }
+
+		location / {
+			include proxy_params;
+			proxy_pass http://127.0.0.1:7021;
+		}
+
+        # deny access to .htaccess files, if Apache's document root
+        # concurs with nginx's one
+        #
+        location ~ /\.ht {
+                deny all;
+        }
+}

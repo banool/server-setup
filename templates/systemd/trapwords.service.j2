@@ -1,0 +1,24 @@
+
+[Unit]
+Description=Trapwords Podman Container
+After=network.target
+
+[Service]
+Type=simple
+TimeoutStartSec=10s
+ExecStartPre=-/usr/bin/podman rm -f "trapwords"
+User={{ unix_user }}
+
+ExecStart=/usr/bin/podman run -t -a stdout -a stderr \
+  --publish 127.0.0.1:{{ external_port }}:{{ internal_port }} \
+  --name trapwords quay.io/banool/trapwords
+
+
+ExecReload=-/usr/bin/podman stop "trapwords"
+ExecReload=-/usr/bin/podman rm "trapwords"
+ExecStop=-/usr/bin/podman stop "trapwords"
+Restart=always
+RestartSec=30
+
+[Install]
+WantedBy=multi-user.target
