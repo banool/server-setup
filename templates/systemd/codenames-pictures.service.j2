@@ -6,18 +6,17 @@ After=network.target
 [Service]
 Type=simple
 TimeoutStartSec=10s
-ExecStartPre=-/usr/bin/podman rm "codenames-pictures"
+ExecStartPre=-/usr/bin/podman rm -f "codenames"
 User={{ unix_user }}
 
 ExecStart=/usr/bin/podman run -t -a stdout -a stderr \
-  --network host \
   --publish 127.0.0.1:{{ external_port }}:{{ internal_port }} \
-  --name codenames-pictures codenames-pictures
+  --name codenames quay.io/banool/codenames-pictures
 
 
-ExecReload=-/usr/bin/podman stop "codenames-pictures"
-ExecReload=-/usr/bin/podman rm "codenames-pictures"
-ExecStop=-/usr/bin/podman stop "codenames-pictures"
+ExecReload=-/usr/bin/podman stop "codenames"
+ExecReload=-/usr/bin/podman rm "codenames"
+ExecStop=-/usr/bin/podman stop "codenames"
 Restart=always
 RestartSec=30
 

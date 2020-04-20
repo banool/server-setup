@@ -84,6 +84,14 @@
         port: 25565-25568/udp
         permanent: yes
         state: enabled
+    - name: Add proxy_params file
+      become: yes
+      template:
+        src: templates/proxy_params
+        dest: /etc/nginx/proxy_params
+        owner: "{{ unix_user }}"
+        group: wheel
+        mode: '0644'
 
 - hosts: dbservers
   name: Install MySQL 8
@@ -294,6 +302,22 @@
         owner: "{{ unix_user }}"
         group: "root"
         mode: '0644'
+    - name: Create codenames nginx config file
+      become: yes
+      template:
+        src: templates/nginx/codenames.j2
+        dest: /etc/nginx/sites-enabled/codenames
+        owner: "{{ unix_user }}"
+        group: "root"
+        mode: '0644'
+    - name: Create taxdefence nginx config file
+      become: yes
+      template:
+        src: templates/nginx/taxdefence.j2
+        dest: /etc/nginx/sites-enabled/taxdefence
+        owner: "{{ unix_user }}"
+        group: "root"
+        mode: '0644'
 
 
 - hosts: webservers
@@ -322,7 +346,7 @@
       shell: wget https://dl.eff.org/certbot-auto && mv certbot-auto /usr/local/bin/certbot-auto && chown root /usr/local/bin/certbot-auto && chmod 0755 /usr/local/bin/certbot-auto
     - name: Run certbot
       become: yes
-      command: /usr/local/bin/certbot-auto --nginx -n --agree-tos --email {{ email }} --domains {{ domains }}
+      command: /usr/local/bin/certbot-auto --nginx -n --agree-tos --email {{ email }} --domains {{ domains }} --expand
     - name: Put autorenew in crontab
       cron:
         name: "autorenew certs with cerbot"
@@ -338,6 +362,13 @@
     - name: Turn off screen
       become: yes
       shell: "echo 0 | sudo tee /sys/class/backlight/intel_backlight/brightness"
+    - name: Restart nginx
+      become: yes
+      systemd:
+        name: nginx
+        daemon_reload: true
+        enabled: true
+        state: restarted
 
 
 # TODO

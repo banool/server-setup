@@ -1,0 +1,23 @@
+[Unit]
+Description=Amaranta Candles UI Container
+After=network.target
+
+[Service]
+Type=simple
+TimeoutStartSec=60s
+ExecStartPre=-/usr/bin/docker rm -f "amaranta_candles_ui"
+User=daniel
+
+ExecStart=/usr/bin/docker run \
+  --publish 127.0.0.1:42069:80 \
+  --name amaranta_candles_ui docker.pkg.github.com/banool/amaranta_candles/amaranta_candles_ui:latest
+
+
+ExecReload=-/usr/bin/docker stop "amaranta_candles_ui"
+ExecReload=-/usr/bin/docker rm "amaranta_candles_ui"
+ExecStop=-/usr/bin/docker stop "amaranta_candles_ui"
+Restart=always
+RestartSec=30
+
+[Install]
+WantedBy=multi-user.target
