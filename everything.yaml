@@ -480,6 +480,9 @@
     - name: Get certbot
       become: yes
       shell: wget https://dl.eff.org/certbot-auto && mv certbot-auto /usr/local/bin/certbot-auto && chown root /usr/local/bin/certbot-auto && chmod 0755 /usr/local/bin/certbot-auto
+    - name: Print cerbot command we will run
+      debug:
+        msg: "/usr/local/bin/certbot-auto --nginx -n --agree-tos --email {{ email }} --domains {{ domains }} --expand"
     - name: Run certbot
       become: yes
       command: /usr/local/bin/certbot-auto --nginx -n --agree-tos --email {{ email }} --domains {{ domains }} --expand

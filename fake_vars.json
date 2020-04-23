@@ -28,14 +28,16 @@
         "internal_port": "fake",
         "external_port": "fake"
     },
+    "trapwords": {
+        "internal_port": "fake",
+        "external_port": "fake"
+    },
     "amaranta_candles": {
         "allowed_hosts": "fake",
         "deployment_mode": "fake",
         "secret_key": "fake",
         "sql_engine": "fake",
         "sql_database": "fake",
-        "sql_user": "fake",
-        "sql_password": "fake",
         "sql_host": "fake",
         "sql_port": "fake",
         "ui_username": "fake",
