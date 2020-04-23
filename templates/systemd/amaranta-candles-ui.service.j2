@@ -1,12 +1,11 @@
-
 [Unit]
-Description=Trapwords Podman Userspace Container
+Description=Amaranta Candles UI Userspace Container
 Wants=network.target
 After=network-online.target
 
 [Service]
 Environment=PODMAN_SYSTEMD_UNIT=%n
-Restart=always
+Restart=on-failure
 RestartSec=30
 RuntimeMaxSec=43200
 
@@ -16,8 +15,8 @@ ExecStart=/usr/bin/podman run \
   --cgroups no-conmon \
   --conmon-pidfile %t/%n-pid \
   --cidfile %t/%n-cid \
-  --publish 127.0.0.1:{{ external_port }}:{{ internal_port }} \
-  --name trapwords trapwords:latest
+  --publish 127.0.0.1:42069:80 \
+  --name amaranta-candles-ui amaranta_candles_ui:latest
 
 ExecStop=/usr/bin/podman rm -f --cidfile %t/%n-cid -t 30
 ExecStopPost=/usr/bin/podman rm --ignore -f --cidfile %t/%n-cid

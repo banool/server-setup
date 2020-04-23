@@ -1,5 +1,5 @@
 [Unit]
-Description=Net Worth Podman Userspace Container
+Description=Amaranta Candles Server Userspace Container
 Wants=network.target
 After=network-online.target
 
@@ -21,27 +21,20 @@ ExecStart=/usr/bin/podman run \
   -e sql_engine='{{ sql_engine }}' \
   -e sql_database='{{ sql_database }}' \
   -e sql_user='{{ sql_user }}' \
-  -e sql_password='{{ sql_password}}' \
-  -e sql_host='{{ sql_host}}' \
-  -e sql_port='{{ sql_port}}' \
-  -e robinhood_username='{{ robinhood_username }}' \
-  -e robinhood_password='{{ robinhood_password }}' \
-  -e robinhood_2fa_barcode='{{ robinhood_2fa_barcode }}' \
-  -e personal_capital_email='{{ personal_capital_email }}' \
-  -e personal_capital_password='{{ personal_capital_password }}' \
+  -e sql_password='{{ sql_password }}' \
+  -e sql_host='{{ sql_host }}' \
+  -e sql_port='{{ sql_port }}' \
   -e ui_username='{{ ui_username }}' \
   -e ui_password='{{ ui_password }}' \
   -e ui_email='{{ ui_email }}' \
-  -e coinmarketcap_api_key='{{ coinmarketcap_api_key }}' \
   --network host \
-  -v /home/daniel/.ssh:/root/.ssh \
-  --name net-worth net-worth:latest
+  --name amaranta-candles-server amaranta_candles_server:latest
 
 ExecStop=/usr/bin/podman rm -f --cidfile %t/%n-cid -t 45
 ExecStopPost=/usr/bin/podman rm --ignore -f --cidfile %t/%n-cid
 
-KillMode=none
 PIDFile=%t/%n-pid
+KillMode=none
 
 [Install]
 WantedBy=multi-user.target default.target

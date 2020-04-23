@@ -12,6 +12,7 @@
     command: podman pull docker.pkg.github.com/banool/amaranta_candles/amaranta_candles_server
   - name: Repull amaranta candles ui image
     command: podman pull docker.pkg.github.com/banool/amaranta_candles/amaranta_candles_ui
+  - name: Repull trapwords image
+    command: podman pull quay.io/banool/trapwords
   - name: Restart container systemd jobs
-    become: yes
-    command: systemctl restart codenames-pictures net-worth amaranta_candles_ui amaranta_candles_server
+    command: systemctl --user restart codenames-pictures net-worth amaranta-candles-ui amaranta-candles-server trapwords

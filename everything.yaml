@@ -24,9 +24,14 @@
         state: directory
         owner: "{{ unix_user }}"
         mode: '0777'
-    - name: Put SELinux into Permissive mode
+    - name: Put SELinux into permissive mode
       become: yes
       command: setenforce 0
+    - name: Put SELinux in permissive mode permanently
+      lineinfile:
+        path: /etc/selinux/config
+        regexp: '^SELINUX='
+        line: SELINUX=permissive
     - name: Add github.com as known host
       shell: ssh-keyscan -H github.com >> "{{ ansible_env.HOME }}/.ssh/known_hosts"
     - name: Add github personal access token to podman
@@ -36,6 +41,13 @@
       dnf:
         name:
           - nginx
+    - name: Make user systemd directory
+      become: yes
+      file:
+        path: "/home/{{ unix_user }}/.config/systemd/user"
+        state: directory
+        owner: "{{ unix_user }}"
+        mode: '0777'
 
 - hosts: webservers
   become: true
@@ -76,12 +88,12 @@
         service: https
         permanent: yes
         state: enabled
-    - name: Enable 25565-25568 in firewalld
+    - name: Enable 25565-25568 tcp in firewalld
       firewalld:
         port: 25565-25568/tcp
         permanent: yes
         state: enabled
-    - name: Enable 25565-25568 in firewalld
+    - name: Enable 25565-25568 udp in firewalld
       firewalld:
         port: 25565-25568/udp
         permanent: yes
@@ -156,16 +168,16 @@
       internal_port: "{{ amaranta_candles.internal_port }}"
       external_port: "{{ amaranta_candles.external_port }}"
     template:
-      src: templates/systemd/amaranta_candles_server.service.j2
-      dest: /etc/systemd/system/amaranta_candles_server.service
+      src: templates/systemd/amaranta-candles-server.service.j2
+      dest: "/home/{{ unix_user }}/.config/systemd/user/amaranta-candles-server.service"
       owner: "{{ unix_user }}"
       group: "root"
       mode: '0644'
   - name: Create ui systemd spec file
     become: yes
     template:
-      src: templates/systemd/amaranta_candles_ui.service.j2
-      dest: /etc/systemd/system/amaranta_candles_ui.service
+      src: templates/systemd/amaranta-candles-ui.service.j2
+      dest: "/home/{{ unix_user }}/.config/systemd/user/amaranta-candles-ui.service"
       owner: "{{ unix_user }}"
       group: "root"
       mode: '0644'
@@ -176,19 +188,19 @@
       login_user: "{{ mysql_user }}"
       login_password: "{{ mysql_password }}"
   - name: Start and enable amaranta candles server service
-    become: yes
     systemd:
-      name: amaranta_candles_server
+      name: amaranta-candles-server
       daemon_reload: true
       enabled: true
       state: restarted
+      scope: user
   - name: Start and enable amaranta candles ui service
-    become: yes
     systemd:
-      name: amaranta_candles_ui
+      name: amaranta-candles-ui
       daemon_reload: true
       enabled: true
       state: restarted
+      scope: user
 
 - hosts: webservers
   name: Install Net Worth site
@@ -202,7 +214,7 @@
       name: quay.io/banool/net-worth
       tag: latest
   - name: Actually repull net-worth image
-    command: podman pull quay.io/banool/net-worth
+    command: podman pull quay.io/banool/net-worth:latest
   - name: Create systemd spec file
     become: yes
     vars:
@@ -228,7 +240,7 @@
       external_port: "{{ net_worth.external_port }}"
     template:
       src: templates/systemd/net-worth.service.j2
-      dest: /etc/systemd/system/net-worth.service
+      dest: "/home/{{ unix_user }}/.config/systemd/user/net-worth.service"
       owner: "{{ unix_user }}"
       group: "root"
       mode: '0644'
@@ -239,12 +251,12 @@
       login_user: "{{ mysql_user }}"
       login_password: "{{ mysql_password }}"
   - name: Start and enable net-worth service
-    become: yes
     systemd:
       name: net-worth
       daemon_reload: true
       enabled: true
       state: restarted
+      scope: user
 
 - hosts: webservers
   name: Install Codenames Pictures site
@@ -266,17 +278,17 @@
       external_port: "{{ codenames_pictures.external_port }}"
     template:
       src: templates/systemd/codenames-pictures.service.j2
-      dest: /etc/systemd/system/codenames-pictures.service
+      dest: "/home/{{ unix_user }}/.config/systemd/user/codenames-pictures.service"
       owner: "{{ unix_user }}"
       group: wheel
       mode: '0644'
   - name: Start and enable codenames-pictures service
-    become: yes
     systemd:
       name: codenames-pictures
       daemon_reload: true
       enabled: true
       state: restarted
+      scope: user
 
 - hosts: webservers
   name: Install Trapwords site
@@ -296,17 +308,17 @@
       external_port: "{{ trapwords.external_port }}"
     template:
       src: templates/systemd/trapwords.service.j2
-      dest: /etc/systemd/system/trapwords.service
+      dest: "/home/{{ unix_user }}/.config/systemd/user/trapwords.service"
       owner: "{{ unix_user }}"
       group: wheel
       mode: '0644'
   - name: Start and enable trapwords service
-    become: yes
     systemd:
       name: trapwords
       daemon_reload: true
       enabled: true
       state: restarted
+      scope: user
 
 - hosts: webservers
   name: Install dport site
@@ -430,8 +442,8 @@
     - name: Create amaranta candles nginx config file
       become: yes
       template:
-        src: templates/nginx/amaranta_candles.j2
-        dest: /etc/nginx/sites-enabled/amaranta_candles
+        src: templates/nginx/amaranta-candles.j2
+        dest: /etc/nginx/sites-enabled/amaranta-candles
         owner: "{{ unix_user }}"
         group: "root"
         mode: '0644'
