@@ -322,6 +322,50 @@
       scope: user
 
 - hosts: webservers
+  name: Install Pants
+  tags:
+    - pants
+  vars:
+    unix_user: "{{ unix_user }}"
+  tasks:
+  - name: Make pants pages directory
+    become: yes
+    file:
+      path: "{{ pants.external_pages_directory }}"
+      state: directory
+      owner: "{{ unix_user }}"
+      mode: '0777'
+  - name: Pull pants image
+    podman_image:
+      name: quay.io/banool/pants
+      tag: latest
+  - name: Actually repull pants image
+    command: podman pull quay.io/banool/pants
+  - name: Create systemd spec file
+    become: yes
+    vars:
+      consumer_key: "{{ pants.consumer_key }}"
+      access_token: "{{ pants.access_token }}"
+      rocket_secret_key: "{{ pants.rocket_secret_key }}" 
+      internal_port: "{{ pants.internal_port }}"
+      external_port: "{{ pants.external_port }}"
+      internal_pages_directory: "{{ pants.internal_pages_directory }}"
+      external_pages_directory: "{{ pants.external_pages_directory }}"
+    template:
+      src: templates/systemd/pants.service.j2
+      dest: "/home/{{ unix_user }}/.config/systemd/user/pants.service"
+      owner: "{{ unix_user }}"
+      group: wheel
+      mode: '0644'
+  - name: Start and enable pants service
+    systemd:
+      name: pants
+      daemon_reload: true
+      enabled: true
+      state: restarted
+      scope: user
+
+- hosts: webservers
   name: Install Trapwords site
   tags:
     - trapwords
@@ -587,6 +631,16 @@
         owner: "{{ unix_user }}"
         group: "root"
         mode: '0644'
+    - name: Create pants nginx config file
+      become: yes
+      vars:
+        external_pages_directory: "{{ pants.external_pages_directory }}"
+      template:
+        src: templates/nginx/pants.j2
+        dest: /etc/nginx/sites-enabled/pants
+        owner: "{{ unix_user }}"
+        group: "root"
+        mode: '0644'
 
 - hosts: webservers
   name: Setup https
@@ -648,3 +702,4 @@
 
 # TODO
 # All other sites
+# Just use pants crate from crates.io perhaps, add hook to pants repo that makes you build and push it

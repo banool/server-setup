@@ -1,0 +1,20 @@
+server {
+        server_name pants.{{ server_name }} pocket.{{ server_name }};
+ 
+	    location /pages/ {
+            autoindex on;
+            root {{ external_pages_directory }};
+        }
+
+        location ~ /.well-known {
+                allow all;
+        }
+        location ~ /\. {
+                deny all;
+        }
+
+		location / {
+			include proxy_params;
+			proxy_pass http://127.0.0.1:8766;
+		}
+}

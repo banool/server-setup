@@ -49,6 +49,15 @@
         "download_directory": "fake",
         "external_port": "fake"
     },
+    "pants": {
+        "consumer_key": "fake",
+        "access_token": "fake",
+        "rocket_secret_key": "fake",
+        "internal_port": "fake",
+        "external_port": "fake",
+        "internal_pages_directory": "fake",
+        "external_pages_directory": "fake"
+    },
     "server_name": "fake",
     "domains": "fake",
     "ip_address": "fake",
