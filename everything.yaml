@@ -24,14 +24,27 @@
         state: directory
         owner: "{{ unix_user }}"
         mode: '0777'
-    - name: Put SELinux into permissive mode
+    - name: Make SELinux work for containers
       become: yes
-      command: setenforce 0
-    - name: Put SELinux in permissive mode permanently
+      command: setsebool -P container_manage_cgroup true 
+    - name: Make SELinux work for nginx 1
+      become: yes
+      command: semanage permissive -a httpd_t
+    - name: Make SELinux work for nginx 2
+      become: yes
+      command: setsebool -P httpd_can_network_relay true
+    - name: Make SELinux work for nginx 3
+      become: yes
+      command: setsebool -P httpd_can_network_connect true
+    - name: Put SELinux into enforced mode
+      become: yes
+      command: setenforce 1
+    - name: Put SELinux in enforced mode permanently
+      become: yes
       lineinfile:
         path: /etc/selinux/config
         regexp: '^SELINUX='
-        line: SELINUX=permissive
+        line: SELINUX=enforced
     - name: Add github.com as known host
       shell: ssh-keyscan -H github.com >> "{{ ansible_env.HOME }}/.ssh/known_hosts"
     - name: Add github personal access token to podman
@@ -112,7 +125,7 @@
         zone: public
     - name: Enable deluge in firewalld
       firewalld:
-        port: 25567
+        port: 25567/tcp
         permanent: yes
         state: enabled
         zone: public
@@ -440,7 +453,7 @@
         state: directory
         owner: "{{ unix_user }}"
         mode: '0777'
-    - name: Create deluge config file
+    - name: Create deluge web config file
       become: yes
       vars:
         config_directory: "{{ deluge.config_directory }}/web.conf"
@@ -473,6 +486,9 @@
         daemon_reload: true
         enabled: true
         state: restarted
+    - name: Alter download path in core.conf
+      become: yes
+      command: "podman exec -it deluge sed -i 's@/root/Downloads@/downloads@g' /config/core.conf"
 
 - hosts: webservers
   name: Setup sites with nginx
@@ -627,4 +643,3 @@
 
 # TODO
 # All other sites
-# Deluge
