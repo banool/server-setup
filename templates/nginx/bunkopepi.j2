@@ -1,6 +1,8 @@
 server {
         server_name bunkopepi.{{ server_name }};
 
+        location = /robots.txt { add_header Content-Type text/plain; return 200 "User-agent: *\nDisallow: /\n"; }
+
         root /var/www/bunkopepi/html;
 
         # Add index.php to the list if you are using PHP

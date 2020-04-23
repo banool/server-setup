@@ -1,5 +1,5 @@
 server {
-        server_name trapwords.{{ server_name }};
+        server_name deluge.{{ server_name }};
 
         location = /robots.txt { add_header Content-Type text/plain; return 200 "User-agent: *\nDisallow: /\n"; }
 
@@ -12,13 +12,6 @@ server {
 
 		location / {
 			include proxy_params;
-			proxy_pass http://127.0.0.1:7021;
+			proxy_pass http://127.0.0.1:25567;
 		}
-
-        # deny access to .htaccess files, if Apache's document root
-        # concurs with nginx's one
-        #
-        location ~ /\.ht {
-                deny all;
-        }
 }

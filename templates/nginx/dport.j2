@@ -1,6 +1,8 @@
 server {
         server_name {{ server_name }} www.{{ server_name }};
 
+        location = /robots.txt { add_header Content-Type text/plain; return 200 "User-agent: *\nDisallow: /\n"; }
+
         root /var/www/dport;
 
         # Add index.php to the list if you are using PHP

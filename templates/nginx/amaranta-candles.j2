@@ -1,6 +1,8 @@
 server {
     server_name candles.amaranta.house;
 
+    location = /robots.txt { add_header Content-Type text/plain; return 200 "User-agent: *\nDisallow: /\n"; }
+
     location /admin {
         include proxy_params;
         proxy_pass http://127.0.0.1:6969/admin;

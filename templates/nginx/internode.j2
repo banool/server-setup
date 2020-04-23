@@ -1,6 +1,8 @@
 server {
         server_name internode.{{ server_name }};
 
+        location = /robots.txt { add_header Content-Type text/plain; return 200 "User-agent: *\nDisallow: /\n"; }
+
         root /var/www/internode;
 
         # Add index.php to the list if you are using PHP
