@@ -9,6 +9,8 @@ Restart=on-failure
 RestartSec=30
 RuntimeMaxSec=43200
 
+ExecStartPre=-/usr/bin/podman rm -f amaranta-candles-server
+ExecStartPre=-/usr/bin/podman rm --storage amaranta-candles-server
 ExecStartPre=/usr/bin/rm -f %t/%n-pid %t/%n-cid
 ExecStart=/usr/bin/podman run \
   -a stdout -a stderr \

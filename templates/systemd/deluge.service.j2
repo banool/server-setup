@@ -10,6 +10,8 @@ Restart=always
 RestartSec=30
 RuntimeMaxSec=43200
 
+ExecStartPre=-/usr/bin/podman rm -f deluge
+ExecStartPre=-/usr/bin/podman rm --storage deluge
 ExecStartPre=/usr/bin/rm -f %t/%n-pid %t/%n-cid
 ExecStart=/usr/bin/podman run \
   -a stdout -a stderr \
