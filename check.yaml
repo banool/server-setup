@@ -1,0 +1,8 @@
+- hosts: webservers
+  name: Check sites are alive
+  tags:
+    - alive
+    - check
+  tasks:
+    - name: Check that sites are alive
+      include: plays_check.yaml

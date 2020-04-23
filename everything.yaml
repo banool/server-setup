@@ -639,21 +639,8 @@
         daemon_reload: true
         enabled: true
         state: restarted
-    - name: Print command for checking whether sites are up
-      debug:
-        msg: "echo {{ domains }} | tr ',' ' ' | xargs curl --fail"
-    - name: Check if all sites are up
-      shell: "echo {{ domains }} | tr ',' ' ' | xargs curl --fail"
-      register: curl_all_sites
-      ignore_errors: true
-    - name: Print whether sites are up (failure)
-      fail:
-        msg: "Some of the configured sites are not alive: {{ curl_all_sites.stdout }}"
-      when: curl_all_sites.rc != 0
-    - name: Print whether sites are up (success)
-      debug:
-        msg: All of the configured sites are alive!
-      when: curl_all_sites.rc == 0
+    - name: Check that sites are alive
+      include: plays_check.yaml
 
 
 
