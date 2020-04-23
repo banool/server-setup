@@ -44,6 +44,11 @@
         "ui_password": "fake",
         "ui_email": "fake"
     },
+    "deluge": {
+        "config_directory": "fake",
+        "download_directory": "fake",
+        "external_port": "fake"
+    },
     "server_name": "fake",
     "domains": "fake",
     "ip_address": "fake",

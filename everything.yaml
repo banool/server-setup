@@ -110,6 +110,12 @@
         permanent: yes
         state: enabled
         zone: public
+    - name: Enable deluge in firewalld
+      firewalld:
+        port: 25567
+        permanent: yes
+        state: enabled
+        zone: public
     - name: Add proxy_params file
       become: yes
       template:
@@ -414,6 +420,61 @@
       copy: "src={{ lookup('env','PWD') }}/other_sites/dont dest=/var/www remote_src=no"
 
 - hosts: webservers
+  name: Setup deluge 
+  tags:
+    - deluge
+  tasks:
+    - name: Pull deluge image
+      command: podman pull linuxserver/deluge
+    - name: Create deluge download directory
+      become: yes
+      file:
+        path: "{{ deluge.download_directory }}"
+        state: directory
+        owner: "{{ unix_user }}"
+        mode: '0777'
+    - name: Create deluge config directory
+      become: yes
+      file:
+        path: "{{ deluge.config_directory }}"
+        state: directory
+        owner: "{{ unix_user }}"
+        mode: '0777'
+    - name: Create deluge config file
+      become: yes
+      vars:
+        config_directory: "{{ deluge.config_directory }}/web.conf"
+        download_directory: "{{ deluge.download_directory }}"
+        external_port: "{{ deluge.external_port }}"
+      template:
+        src: templates/deluge/web.conf.j2
+        dest: "{{ deluge.config_directory }}/web.conf"
+        owner: "{{ unix_user }}"
+        group: wheel
+        mode: '0644'
+    - name: Create deluge systemd file
+      become: yes
+      vars:
+        config_directory: "{{ deluge.config_directory }}"
+        download_directory: "{{ deluge.download_directory }}"
+        puid: 1000
+        pgid: 1000
+        timezone: "America/Los_Angeles"
+      template:
+        src: templates/systemd/deluge.service.j2
+        dest: "/etc/systemd/system/deluge.service"
+        owner: "{{ unix_user }}"
+        group: wheel
+        mode: '0644'
+    - name: Start and enable deluge
+      become: yes
+      systemd:
+        name: deluge 
+        daemon_reload: true
+        enabled: true
+        state: restarted
+
+- hosts: webservers
   name: Setup sites with nginx
   tags:
     - nginx
@@ -498,6 +559,14 @@
       template:
         src: templates/nginx/plex.j2
         dest: /etc/nginx/sites-enabled/plex
+        owner: "{{ unix_user }}"
+        group: "root"
+        mode: '0644'
+    - name: Create deluge nginx config file
+      become: yes
+      template:
+        src: templates/nginx/deluge.j2
+        dest: /etc/nginx/sites-enabled/deluge
         owner: "{{ unix_user }}"
         group: "root"
         mode: '0644'

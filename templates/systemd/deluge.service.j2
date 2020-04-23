@@ -1,0 +1,36 @@
+
+[Unit]
+Description=Deluge Podman Root Container
+Wants=network.target
+After=network-online.target
+
+[Service]
+Environment=PODMAN_SYSTEMD_UNIT=%n
+Restart=always
+RestartSec=30
+RuntimeMaxSec=43200
+
+ExecStartPre=/usr/bin/rm -f %t/%n-pid %t/%n-cid
+ExecStart=/usr/bin/podman run \
+  -a stdout -a stderr \
+  --cgroups no-conmon \
+  --conmon-pidfile %t/%n-pid \
+  --cidfile %t/%n-cid \
+  --net host \
+  -e PUID={{ puid }} \
+  -e PGID={{ pgid }} \
+  -e TZ={{ timezone }} \
+  -e UMASK_SET=022 \
+  -e DELUGE_LOGLEVEL=debug \
+  -v {{ config_directory }}:/config \
+  -v {{ download_directory }}:/downloads \
+  --name deluge linuxserver/deluge:latest
+
+ExecStop=/usr/bin/podman rm -f --cidfile %t/%n-cid -t 30
+ExecStopPost=/usr/bin/podman rm --ignore -f --cidfile %t/%n-cid
+
+PIDFile=%t/%n-pid
+KillMode=none
+
+[Install]
+WantedBy=multi-user.target default.target
