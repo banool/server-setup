@@ -98,6 +98,18 @@
         port: 25565-25568/udp
         permanent: yes
         state: enabled
+    - name: Enable plex TCP in firewalld
+      firewalld:
+        port: 32400/tcp
+        permanent: yes
+        state: enabled
+        zone: public
+    - name: Enable plex UDP in firewalld
+      firewalld:
+        port: 32400/tcp
+        permanent: yes
+        state: enabled
+        zone: public
     - name: Add proxy_params file
       become: yes
       template:
@@ -368,6 +380,32 @@
         dest: /var/www/internode
 
 - hosts: webservers
+  name: Install plex
+  tags:
+    - plex
+  tasks:
+    - name: Create plex repo file
+      become: yes
+      template:
+        src: templates/plex.repo
+        dest: /etc/yum.repos.d/plex.repo
+        owner: "{{ unix_user }}"
+        group: wheel
+        mode: '0644'
+    - name: Install plex
+      become: yes
+      dnf:
+        name:
+          - plexmediaserver
+    - name: Start and enable plex
+      become: yes
+      systemd:
+        name: plexmediaserver
+        daemon_reload: true
+        enabled: true
+        state: restarted
+
+- hosts: webservers
   name: Install dont site
   tags:
     - dont
@@ -455,6 +493,14 @@
         owner: "{{ unix_user }}"
         group: "root"
         mode: '0644'
+    - name: Create plex nginx config file
+      become: yes
+      template:
+        src: templates/nginx/plex.j2
+        dest: /etc/nginx/sites-enabled/plex
+        owner: "{{ unix_user }}"
+        group: "root"
+        mode: '0644'
 
 - hosts: webservers
   name: Setup https
@@ -511,13 +557,5 @@
 
 
 # TODO
-# Nginx
 # All other sites
-# #https
-# Crons
 # Deluge
-# Plex
-# External HDD mounts
-# Turning off the screen
-# History for net worth
-# certbot
