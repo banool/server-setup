@@ -1,7 +1,5 @@
 server {
-        server_name codenames.{{ server_name }};
-
-        location = /robots.txt { add_header Content-Type text/plain; return 200 "User-agent: *\nDisallow: /\n"; }
+        server_name codenames-pictures.{{ server_name }} codenames.{{ server_name }};
 
         location ~ /.well-known {
                 allow all;

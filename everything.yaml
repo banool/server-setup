@@ -393,6 +393,7 @@
   name: Install internode site
   tags:
     - internode
+    - adport
   tasks:
     - git:
         repo: git@github.com:banool/adport-internode.git
@@ -639,8 +640,9 @@
         daemon_reload: true
         enabled: true
         state: restarted
-    - name: Check that sites are alive
-      include: plays_check.yaml
+    - name: Check locally that sites are alive
+      shell: "python3 {{ playbook_dir }}/check.py --urls {{ domains }}"
+      delegate_to: localhost
 
 
 
