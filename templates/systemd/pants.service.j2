@@ -15,7 +15,7 @@ ExecStartPre=/usr/bin/rm -f %t/%n-pid %t/%n-cid
 ExecStart=/usr/bin/podman run \
   -a stdout -a stderr \
   -e PANTS_PAGES_ROOT='{{ internal_pages_directory }}' \
-  -e PANTS_SITE='pants.{{ server_name }}' \
+  -e PANTS_SITE='https://pants.{{ server_name }}' \
   -e PANTS_CONSUMER_KEY='{{ consumer_key }}' \
   -e PANTS_ACCESS_TOKEN='{{ access_token }}' \
   -e PANTS_STATIC_ROOT='static' \
