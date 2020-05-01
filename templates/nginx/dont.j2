@@ -1,5 +1,5 @@
 server {
-        server_name dont.dport.me;
+        server_name dont.{{ server_name }};
 
         location = /robots.txt { add_header Content-Type text/plain; return 200 "User-agent: *\nDisallow: /\n"; }
 
