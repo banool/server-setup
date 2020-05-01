@@ -34,7 +34,7 @@ To get notified at 10am every day if one of the sites is down, put something lik
 
 MAILTO=""
 
-0 10 * * * $HOME/.bash_profile; cd /Users/dport/github/server-setup && output=`python3 check.py --read-from-vars` || printf "$output" > /tmp/broken_sites && /usr/local/bin/terminal-notifier -title 'Some of your sites are broken' -message "$output" -open file:///tmp/broken_sites
+0 10 * * * $HOME/.bash_profile; cd /Users/dport/github/server-setup && output=`python3 check.py --read-from-vars` || bash -c 'printf "$output" > /tmp/broken_sites && /usr/local/bin/terminal-notifier -title "Some of your sites are broken" -message "$output" -open file:///tmp/broken_sites'
 ```
 
 **Note:** To make this production ready, make sure to set development_mode to prod in vars.json

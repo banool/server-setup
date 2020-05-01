@@ -15,7 +15,7 @@ for fname in files:
     l = l.replace("{{ ", "{{").replace(" }}", "}}").replace(";", "")
     sites = l.split()
     sites = [s.replace("{{server_name}}", SERVER_NAME) for s in l.split()]
-    sites = [s for s in sites if SERVER_NAME in s]
+    sites = [s for s in sites if s != "server_name"]
     all_sites += sites
 
 print(",".join(all_sites))

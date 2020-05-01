@@ -25,6 +25,10 @@ async def main():
     parser.add_argument("--read-from-vars", action="store_true")
     args = parser.parse_args()
 
+    if not args.urls and not args.read_from_vars:
+        print("Please pass either --urls or --read-from-vars")
+        sys.exit(1)
+
     if args.read_from_vars:
         with open(VARS_FILE, "r") as f:
             d = json.load(f)
