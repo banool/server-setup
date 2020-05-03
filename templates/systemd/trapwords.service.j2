@@ -18,7 +18,6 @@ ExecStart=/usr/bin/podman run \
   --cgroups no-conmon \
   --conmon-pidfile %t/%n-pid \
   --cidfile %t/%n-cid \
-  -e GOOGLE_KEY='{{ google_key }}' \
   --publish 127.0.0.1:{{ external_port }}:{{ internal_port }} \
   --name trapwords trapwords:latest
 

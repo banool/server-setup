@@ -501,7 +501,7 @@
       tag: latest
   - name: Actually repull safecycle image
     command: podman pull quay.io/banool/safecycle
-  - name: Create systemd spec file
+  - name: Create safecycle systemd spec file
     become: yes
     vars:
       google_key: "{{ safecycle.google_key }}"
