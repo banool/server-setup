@@ -4,6 +4,7 @@
     "email": "fake",
     "mysql_user": "fake",
     "mysql_password": "fake",
+    "dropbox_access_token": "fake",
     "net_worth": {
         "secret_key": "fake",
         "allowed_hosts": "fake",
@@ -42,7 +43,11 @@
         "sql_port": "fake",
         "ui_username": "fake",
         "ui_password": "fake",
-        "ui_email": "fake"
+        "ui_email": "fake",
+        "dropbox_backup_path": "fake",
+        "external_static_path": "fake",
+        "server_internal_static_path": "fake",
+        "ui_internal_static_path": "fake"
     },
     "deluge": {
         "config_directory": "fake",
@@ -58,8 +63,12 @@
         "internal_pages_directory": "fake",
         "external_pages_directory": "fake"
     },
+    "safecycle": {
+        "google_key": "fake",
+        "static_port": "fake",
+        "api_port": "fake"
+    },
     "server_name": "fake",
     "domains": "fake",
-    "ip_address": "fake",
     "github_personal_access_token": "fake"
 }
