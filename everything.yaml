@@ -444,6 +444,15 @@
         dest: /var/www/internode
 
 - hosts: webservers
+  name: Install back server splash site
+  tags:
+    - back_server_splash
+  tasks:
+    - git:
+        repo: git@github.com:banool/back-server-splash.git
+        dest: /var/www/back_server_splash
+
+- hosts: webservers
   name: Install plex
   tags:
     - plex
@@ -638,6 +647,14 @@
       template:
         src: templates/nginx/pants.j2
         dest: /etc/nginx/sites-enabled/pants
+        owner: "{{ unix_user }}"
+        group: "root"
+        mode: '0644'
+    - name: Create back server splash nginx config file
+      become: yes
+      template:
+        src: templates/nginx/back-server-splash.j2
+        dest: /etc/nginx/sites-enabled/back-server-splash
         owner: "{{ unix_user }}"
         group: "root"
         mode: '0644'

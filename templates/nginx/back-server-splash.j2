@@ -1,0 +1,13 @@
+server {
+        server_name back-server-splash.{{ server_name }};
+
+        location = /robots.txt { add_header Content-Type text/plain; return 200 "User-agent: *\nDisallow: /\n"; }
+
+        root /var/www/back_server_splash;
+
+        index index.html index.htm;
+
+        location / {
+                try_files $uri $uri/ =404;
+        }
+}
