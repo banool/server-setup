@@ -462,6 +462,35 @@
         dest: /var/www/rolly_mountain
 
 - hosts: webservers
+  name: Install Safecycle site
+  tags:
+    - safecycle
+  tasks:
+  - name: Pull safecycle image
+    podman_image:
+      name: quay.io/banool/safecycle
+      tag: latest
+  - name: Actually repull safecycle image
+    command: podman pull quay.io/banool/safecycle
+  - name: Create systemd spec file
+    become: yes
+    vars:
+      google_key: "{{ safecycle.google_key }}"
+    template:
+      src: templates/systemd/safecycle.service.j2
+      dest: "/home/{{ unix_user }}/.config/systemd/user/safecycle.service"
+      owner: "{{ unix_user }}"
+      group: wheel
+      mode: '0644'
+  - name: Start and enable safecycle service
+    systemd:
+      name: safecycle
+      daemon_reload: true
+      enabled: true
+      state: restarted
+      scope: user
+
+- hosts: webservers
   name: Install plex
   tags:
     - plex
@@ -672,6 +701,14 @@
       template:
         src: templates/nginx/rollymountain.j2
         dest: /etc/nginx/sites-enabled/rollymountain
+        owner: "{{ unix_user }}"
+        group: "root"
+        mode: '0644'
+    - name: Create safecycle config file
+      become: yes
+      template:
+        src: templates/nginx/safecycle.j2
+        dest: /etc/nginx/sites-enabled/safecycle
         owner: "{{ unix_user }}"
         group: "root"
         mode: '0644'

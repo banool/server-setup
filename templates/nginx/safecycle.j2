@@ -1,0 +1,15 @@
+server {
+    server_name safecycle.{{ server_name }};
+
+    location = /robots.txt { add_header Content-Type text/plain; return 200 "User-agent: *\nDisallow: /\n"; }
+
+    location / {
+        include proxy_params;
+        proxy_pass http://127.0.0.1:5666;
+    }
+
+    location /handler {
+        include proxy_params;
+        proxy_pass http://127.0.0.1:5667;
+    }
+}

@@ -16,5 +16,7 @@
     command: podman pull quay.io/banool/trapwords
   - name: Repull pants image
     command: podman pull quay.io/banool/pants
+  - name: Repull safecycle image
+    command: podman pull quay.io/banool/safecycle
   - name: Restart container systemd jobs
-    command: systemctl --user restart codenames-pictures net-worth amaranta-candles-ui amaranta-candles-server trapwords pants
+    command: systemctl --user restart codenames-pictures net-worth amaranta-candles-ui amaranta-candles-server trapwords pants safecycle

@@ -1,6 +1,5 @@
-
 [Unit]
-Description=Trapwords Podman Userspace Container
+Description=Safecycle Userspace Podman Container
 Wants=network.target
 After=network-online.target
 
@@ -10,19 +9,19 @@ Restart=always
 RestartSec=30
 RuntimeMaxSec=43200
 
-ExecStartPre=-/usr/bin/podman rm -f trapwords
-ExecStartPre=-/usr/bin/podman rm --storage trapwords
+ExecStartPre=-/usr/bin/podman rm -f safecycle 
+ExecStartPre=-/usr/bin/podman rm --storage safecycle 
 ExecStartPre=/usr/bin/rm -f %t/%n-pid %t/%n-cid
 ExecStart=/usr/bin/podman run \
   -a stdout -a stderr \
   --cgroups no-conmon \
   --conmon-pidfile %t/%n-pid \
+  -e GOOGLE_KEY={{ google_key }} \
   --cidfile %t/%n-cid \
-  -e GOOGLE_KEY='{{ google_key }}' \
-  --publish 127.0.0.1:{{ external_port }}:{{ internal_port }} \
-  --name trapwords trapwords:latest
+  --network host \
+  --name safecycle safecycle:latest
 
-ExecStop=/usr/bin/podman rm -f --cidfile %t/%n-cid -t 30
+ExecStop=/usr/bin/podman rm -f --cidfile %t/%n-cid
 ExecStopPost=/usr/bin/podman rm --ignore -f --cidfile %t/%n-cid
 
 PIDFile=%t/%n-pid
