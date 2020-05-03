@@ -1,0 +1,11 @@
+server {
+        server_name rolly-mountain.{{ server_name }} rollymountain.{{ server_name }};
+
+        root /var/www/rolly_mountain/webgl_release;
+
+        index index.html index.htm;
+
+        location / {
+                try_files $uri $uri/ =404;
+        }
+}

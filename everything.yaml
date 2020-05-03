@@ -453,6 +453,15 @@
         dest: /var/www/back_server_splash
 
 - hosts: webservers
+  name: Install rolly mountain site
+  tags:
+    - rolly_mountain
+  tasks:
+    - git:
+        repo: git@github.com:banool/comp30019-assn2.git
+        dest: /var/www/rolly_mountain
+
+- hosts: webservers
   name: Install plex
   tags:
     - plex
@@ -655,6 +664,14 @@
       template:
         src: templates/nginx/back-server-splash.j2
         dest: /etc/nginx/sites-enabled/back-server-splash
+        owner: "{{ unix_user }}"
+        group: "root"
+        mode: '0644'
+    - name: Create rolly mountain nginx config file
+      become: yes
+      template:
+        src: templates/nginx/rollymountain.j2
+        dest: /etc/nginx/sites-enabled/rollymountain
         owner: "{{ unix_user }}"
         group: "root"
         mode: '0644'
