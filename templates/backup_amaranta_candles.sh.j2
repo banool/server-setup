@@ -1,0 +1,16 @@
+#!/bin/bash
+
+set -e
+
+rm -f /tmp/amaranta_candles_backup.sql
+
+mysqldump {{ sql_database }} > /tmp/amaranta_candles_backup.sql
+
+curl -X POST https://content.dropboxapi.com/2/files/upload \
+    --header "Authorization: Bearer {{ dropbox_access_token }}" \
+    --header "Dropbox-API-Arg: {\"path\": \"{{ dropbox_backup_path }}\",\"mode\": \"overwrite\",\"autorename\": false,\"mute\": false,\"strict_conflict\": false}" \
+    --header "Content-Type: application/octet-stream" \
+    --data-binary @/tmp/amaranta_candles_backup.sql
+
+echo
+echo 'Successfully backed up {{ sql_database }}!!!' 

@@ -232,6 +232,24 @@
       enabled: true
       state: restarted
       scope: user
+  - name: Create script to backup the amaranta candles DB
+    become: yes
+    vars:
+      sql_database: "{{ amaranta_candles.sql_database }}"
+      dropbox_access_token: "{{ dropbox_access_token }}"
+      dropbox_backup_path: "{{ amaranta_candles.dropbox_backup_path }}"
+    template:
+      src: templates/backup_amaranta_candles.sh.j2
+      dest: "/home/{{ unix_user }}/backup_amaranta_candles.sh"
+      owner: "{{ unix_user }}"
+      group: "root"
+      mode: '0744'
+  - name: Add backup script to crontab
+    cron:
+      name: "back up amaranta candles"
+      minute: "0"
+      hour: "3"
+      job: "/home/{{ unix_user }}/backup_amaranta_candles.sh"
 
 - hosts: webservers
   name: Install Net Worth site
