@@ -13,6 +13,11 @@ server {
         proxy_pass http://127.0.0.1:6969/api;
     }
 
+    location /static {
+        include proxy_params;
+        proxy_pass http://127.0.0.1:42069/static;
+    }
+
     location / {
         include proxy_params;
         proxy_pass http://127.0.0.1:42069;

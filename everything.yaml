@@ -198,6 +198,8 @@
       ui_password: "{{ amaranta_candles.ui_password }}"
       internal_port: "{{ amaranta_candles.internal_port }}"
       external_port: "{{ amaranta_candles.external_port }}"
+      external_static_path: "{{ amaranta_candles.external_static_path }}"
+      server_internal_static_path: "{{ amaranta_candles.server_internal_static_path }}"
     template:
       src: templates/systemd/amaranta-candles-server.service.j2
       dest: "/home/{{ unix_user }}/.config/systemd/user/amaranta-candles-server.service"
@@ -206,6 +208,9 @@
       mode: '0644'
   - name: Create ui systemd spec file
     become: yes
+    vars:
+      external_static_path: "{{ amaranta_candles.external_static_path }}"
+      ui_internal_static_path: "{{ amaranta_candles.ui_internal_static_path }}"
     template:
       src: templates/systemd/amaranta-candles-ui.service.j2
       dest: "/home/{{ unix_user }}/.config/systemd/user/amaranta-candles-ui.service"
@@ -218,6 +223,12 @@
       state: present
       login_user: "{{ mysql_user }}"
       login_password: "{{ mysql_password }}"
+  - name: Make amaranta candles host level static files directory
+    file:
+      path: "{{ amaranta_candles.external_static_path }}"
+      owner: "{{ unix_user }}"
+      state: directory
+      mode: '0755'
   - name: Start and enable amaranta candles server service
     systemd:
       name: amaranta-candles-server

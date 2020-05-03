@@ -30,6 +30,7 @@ ExecStart=/usr/bin/podman run \
   -e ui_password='{{ ui_password }}' \
   -e ui_email='{{ ui_email }}' \
   --network host \
+  -v {{ external_static_path }}:{{ server_internal_static_path }} \
   --name amaranta-candles-server amaranta_candles_server:latest
 
 ExecStop=/usr/bin/podman rm -f --cidfile %t/%n-cid -t 45
