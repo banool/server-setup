@@ -1,5 +1,6 @@
 import asyncio
 import argparse
+import functools
 import json
 import sys
 import urllib.request
@@ -12,10 +13,15 @@ async def check_site(url):
     if not url.startswith("http://"):
         url = f"http://{url}"
     try: 
-        ret = urllib.request.urlopen(url)
+        loop = asyncio.get_event_loop()
+        f = functools.partial(urllib.request.urlopen, timeout=15)
+        ret = await loop.run_in_executor(None, f, url)
         code = ret.status
     except urllib.error.HTTPError as e:
         code = e.code
+    except urllib.error.URLError as e:
+        # Timeout
+        code = 999
     return url, code
 
 
