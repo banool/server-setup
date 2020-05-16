@@ -1,0 +1,41 @@
+[Unit]
+Description=Django Diary Podman Userspace Container
+Wants=network.target
+After=network-online.target
+
+[Service]
+Environment=PODMAN_SYSTEMD_UNIT=%n
+Restart=on-failure
+RestartSec=30
+RuntimeMaxSec=43200
+
+ExecStartPre=-/usr/bin/podman rm -f diary-django
+ExecStartPre=-/usr/bin/podman rm --storage diary-django
+ExecStartPre=/usr/bin/rm -f %t/%n-pid %t/%n-cid
+ExecStart=/usr/bin/podman run \
+  -a stdout -a stderr \
+  --cgroups no-conmon \
+  --conmon-pidfile %t/%n-pid \
+  --cidfile %t/%n-cid \
+  -e ALLOWED_HOSTS='{{ allowed_hosts }}' \
+  -e SECRET_KEY='{{ secret_key }}' \
+  -e DB_NAME='{{ sql_database }}' \
+  -e DB_USER='{{ sql_user }}' \
+  -e DB_PASSWORD='{{ sql_password }}' \
+  -e DB_HOST='{{ sql_host }}' \
+  -e DB_PORT='{{ sql_port }}' \
+  -e UI_USERNAME='{{ ui_username }}' \
+  -e UI_PASSWORD='{{ ui_password }}' \
+  -e UI_EMAIL='{{ ui_email }}' \
+  --network host \
+  -v /home/daniel/.ssh:/root/.ssh \
+  --name diary-django diary-django:latest
+
+ExecStop=/usr/bin/podman rm -f --cidfile %t/%n-cid -t 45
+ExecStopPost=/usr/bin/podman rm --ignore -f --cidfile %t/%n-cid
+
+KillMode=none
+PIDFile=%t/%n-pid
+
+[Install]
+WantedBy=multi-user.target default.target

@@ -1,0 +1,14 @@
+server {
+    server_name diary.{{ server_name }};
+
+    location = /robots.txt { add_header Content-Type text/plain; return 200 "User-agent: *\nDisallow: /\n"; }
+
+    location = /favicon.ico { access_log off; log_not_found off; }
+
+    location / {
+        include proxy_params;
+        proxy_pass http://localhost:11111;
+    }
+
+    proxy_read_timeout 600s;
+}

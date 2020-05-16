@@ -68,6 +68,16 @@
         "static_port": "fake",
         "api_port": "fake"
     },
+    "diary": {
+        "allowed_hosts": "fake",
+        "secret_key": "fake",
+        "sql_database": "fake",
+        "sql_host": "fake",
+        "sql_port": "fake",
+        "ui_username": "fake",
+        "ui_password": "fake",
+        "ui_email": "fake"
+    },
     "server_name": "fake",
     "domains": "fake",
     "github_personal_access_token": "fake"

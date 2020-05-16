@@ -556,6 +556,51 @@
         dest: /var/www/foodbrew
 
 - hosts: webservers
+  name: Install diary site
+  tags:
+    - diary
+  tasks:
+  - name: Pull diary image
+    podman_image:
+      name: quay.io/banool/diary-django
+      tag: latest
+  - name: Actually repull diary image
+    command: podman pull quay.io/banool/diary-django
+  - name: Make diary database in MySQL
+    mysql_db:
+      name: "{{ diary.sql_database }}"
+      state: present
+      login_user: "{{ mysql_user }}"
+      login_password: "{{ mysql_password }}"
+  - name: Create diary systemd spec file
+    become: yes
+    vars:
+      allowed_hosts: "{{ diary.allowed_hosts }}"
+      secret_key: "{{ diary.secret_key }}"
+      sql_engine: "{{ diary.sql_engine }}"
+      sql_database: "{{ diary.sql_database }}"
+      sql_user: "{{ mysql_user }}"
+      sql_password: "{{ mysql_password}}"
+      sql_host: "{{ diary.sql_host}}"
+      sql_port: "{{ diary.sql_port}}"
+      ui_username: "{{ diary.ui_username }}"
+      ui_email: "{{ diary.ui_email }}"
+      ui_password: "{{ diary.ui_password }}"
+    template:
+      src: templates/systemd/diary-django.service.j2
+      dest: "/home/{{ unix_user }}/.config/systemd/user/diary-django.service"
+      owner: "{{ unix_user }}"
+      group: wheel
+      mode: '0644'
+  - name: Start and enable diary-django service
+    systemd:
+      name: diary-django
+      daemon_reload: true
+      enabled: true
+      state: restarted
+      scope: user
+
+- hosts: webservers
   name: Install plex
   tags:
     - plex
@@ -790,6 +835,14 @@
       template:
         src: templates/nginx/foodbrew.j2
         dest: /etc/nginx/sites-enabled/foodbrew
+        owner: "{{ unix_user }}"
+        group: "root"
+        mode: '0644'
+    - name: Create diary config file
+      become: yes
+      template:
+        src: templates/nginx/diary-django.j2
+        dest: /etc/nginx/sites-enabled/diary-django
         owner: "{{ unix_user }}"
         group: "root"
         mode: '0644'
