@@ -10,5 +10,10 @@ server {
         proxy_pass http://localhost:11111;
     }
 
+    location /static {
+        include proxy_params;
+        proxy_pass http://localhost:11112;
+    }
+
     proxy_read_timeout 600s;
 }
