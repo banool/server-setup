@@ -520,6 +520,33 @@
       scope: user
 
 - hosts: webservers
+  name: Install Gomogo site
+  tags:
+    - gomogo
+  tasks:
+  - name: Pull gomogo image
+    podman_image:
+      name: quay.io/banool/gomogo
+      tag: latest
+  - name: Actually repull gomogo image
+    command: podman pull quay.io/banool/gomogo
+  - name: Create gomogo systemd spec file
+    become: yes
+    template:
+      src: templates/systemd/gomogo.service.j2
+      dest: "/home/{{ unix_user }}/.config/systemd/user/gomogo.service"
+      owner: "{{ unix_user }}"
+      group: wheel
+      mode: '0644'
+  - name: Start and enable gomogo service
+    systemd:
+      name: gomogo
+      daemon_reload: true
+      enabled: true
+      state: restarted
+      scope: user
+
+- hosts: webservers
   name: Install plex
   tags:
     - plex
@@ -741,6 +768,14 @@
         owner: "{{ unix_user }}"
         group: "root"
         mode: '0644'
+    - name: Create gomogo config file
+      become: yes
+      template:
+        src: templates/nginx/gomogo.j2
+        dest: /etc/nginx/sites-enabled/gomogo
+        owner: "{{ unix_user }}"
+        group: "root"
+        mode: '0644'
 
 - hosts: webservers
   name: Setup https
@@ -773,6 +808,7 @@
       become: yes
       command: /usr/local/bin/certbot-auto --nginx -n --agree-tos --email {{ email }} --domains {{ domains }} --expand
     - name: Put autorenew in crontab
+      become: yes
       cron:
         name: "autorenew certs with cerbot"
         minute: "0"
