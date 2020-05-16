@@ -547,6 +547,15 @@
       scope: user
 
 - hosts: webservers
+  name: Install foodbrew site (only static, no backend)
+  tags:
+    - foodbrew 
+  tasks:
+    - git:
+        repo: git@github.com:banool/foodbrew.git
+        dest: /var/www/foodbrew
+
+- hosts: webservers
   name: Install plex
   tags:
     - plex
@@ -773,6 +782,14 @@
       template:
         src: templates/nginx/gomogo.j2
         dest: /etc/nginx/sites-enabled/gomogo
+        owner: "{{ unix_user }}"
+        group: "root"
+        mode: '0644'
+    - name: Create foodbrew config file
+      become: yes
+      template:
+        src: templates/nginx/foodbrew.j2
+        dest: /etc/nginx/sites-enabled/foodbrew
         owner: "{{ unix_user }}"
         group: "root"
         mode: '0644'
