@@ -322,6 +322,7 @@
   name: Install Codenames Pictures site
   tags:
     - codenames_pictures
+    - codenames
   vars:
     unix_user: "{{ unix_user }}"
   tasks:
