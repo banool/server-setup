@@ -63,7 +63,7 @@
         mode: '0777'
 
 - hosts: webservers
-  become: true
+  become: yes
   tags: nginx
   tasks:
     - name: Make /etc/nginx/sites-available
@@ -129,6 +129,11 @@
         permanent: yes
         state: enabled
         zone: public
+    - name: Enable mastermind tcp in firewalld
+      firewalld:
+        port: 12340/tcp
+        permanent: yes
+        state: enabled
     - name: Add proxy_params file
       become: yes
       template:
@@ -420,6 +425,33 @@
   - name: Start and enable trapwords service
     systemd:
       name: trapwords
+      daemon_reload: true
+      enabled: true
+      state: restarted
+      scope: user
+
+- hosts: webservers
+  name: Install mastermind site
+  tags:
+    - mastermind
+  tasks:
+  - name: Pull mastermind image
+    podman_image:
+      name: quay.io/banool/comp30023-assn2
+      tag: latest
+  - name: Actually repull mastermind image
+    command: podman pull quay.io/banool/comp30023-assn2
+  - name: Create systemd spec file
+    become: yes
+    template:
+      src: templates/systemd/mastermind.service.j2
+      dest: "/home/{{ unix_user }}/.config/systemd/user/mastermind.service"
+      owner: "{{ unix_user }}"
+      group: wheel
+      mode: '0644'
+  - name: Start and enable mastermind service
+    systemd:
+      name: mastermind
       daemon_reload: true
       enabled: true
       state: restarted

@@ -1,0 +1,30 @@
+[Unit]
+Description=Mastermind Userspace Podman Container
+Wants=network.target
+After=network-online.target
+
+[Service]
+Environment=PODMAN_SYSTEMD_UNIT=%n
+Restart=always
+RestartSec=30
+RuntimeMaxSec=43200
+
+ExecStartPre=-/usr/bin/podman rm -f mastermind
+ExecStartPre=-/usr/bin/podman rm --storage mastermind
+ExecStartPre=/usr/bin/rm -f %t/%n-pid %t/%n-cid
+ExecStart=/usr/bin/podman run \
+  -a stdout -a stderr \
+  --cgroups no-conmon \
+  --conmon-pidfile %t/%n-pid \
+  --cidfile %t/%n-cid \
+  --publish 127.0.0.1:12340:12340 \
+  --name mastermind comp30023-assn2:latest
+
+ExecStop=/usr/bin/podman rm -f --cidfile %t/%n-cid
+ExecStopPost=/usr/bin/podman rm --ignore -f --cidfile %t/%n-cid
+
+PIDFile=%t/%n-pid
+KillMode=none
+
+[Install]
+WantedBy=multi-user.target default.target
