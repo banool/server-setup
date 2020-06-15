@@ -1,0 +1,32 @@
+[Unit]
+Description=Team Heister Tactics Podman Userspace Container
+Wants=network.target
+After=network-online.target
+
+[Service]
+Environment=PODMAN_SYSTEMD_UNIT=%n
+Restart=on-failure
+RestartSec=30
+RuntimeMaxSec=43200
+
+ExecStartPre=-/usr/bin/podman rm -f team-heist-tactics
+ExecStartPre=-/usr/bin/podman rm --storage team-heist-tactics
+ExecStartPre=/usr/bin/rm -f %t/%n-pid %t/%n-cid
+ExecStartPre=/usr/bin/rm -f {{ tht_static_dir }}/*
+ExecStart=/usr/bin/podman run \
+  -a stdout -a stderr \
+  --cgroups no-conmon \
+  --conmon-pidfile %t/%n-pid \
+  --cidfile %t/%n-cid \
+  -v {{ tht_static_dir }}:/tht/static \
+  --publish 127.0.0.1:19996:19996 \
+  --name team-heist-tactics docker.pkg.github.com/banool/team_heist_tactics/team_heist_tactics:latest
+
+ExecStop=/usr/bin/podman rm -f --cidfile %t/%n-cid -t 45
+ExecStopPost=/usr/bin/podman rm --ignore -f --cidfile %t/%n-cid
+
+KillMode=none
+PIDFile=%t/%n-pid
+
+[Install]
+WantedBy=multi-user.target default.target

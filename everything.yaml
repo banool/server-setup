@@ -61,6 +61,13 @@
         state: directory
         owner: "{{ unix_user }}"
         mode: '0777'
+    - name: Enable NTP sync with chronyd
+      become: yes
+      systemd:
+        name: chronyd
+        daemon_reload: true
+        enabled: true
+        state: restarted
 
 - hosts: webservers
   become: yes
@@ -85,6 +92,17 @@
         path: /etc/nginx/nginx.conf
         regexp: 'include /etc/nginx/conf.d/\*.conf;'
         replace: 'include /etc/nginx/sites-enabled/*;'
+    - name: Make nginx cache dir 
+      become: yes
+      file:
+        path: /var/nginx_cache
+        state: directory
+        mode: '0777'
+    - name: Enable support for caching
+      replace:
+        path: /etc/nginx/nginx.conf
+        regexp: '# Load modular configuration.*'
+        replace: 'proxy_cache_path /var/nginx_cache keys_zone=one:10m;'
     - name: Restart nginx
       systemd:
         name: nginx
@@ -634,6 +652,39 @@
       scope: user
 
 - hosts: webservers
+  name: Install team heist tactics site
+  tags:
+    - team_heist_tactics
+    - tht
+  tasks:
+  - name: Make team heist tactics static dir for bindmounting
+    become: yes
+    file:
+      path: "{{ team_heist_tactics.tht_static_dir }}"
+      state: directory
+      owner: "{{ unix_user }}"
+      mode: '0777'
+  - name: Pull team heist tactics image
+    command: podman pull docker.pkg.github.com/banool/team_heist_tactics/team_heist_tactics:latest
+  - name: Create team heist tactics systemd spec file
+    become: yes
+    vars:
+      tht_static_dir: "{{ team_heist_tactics.tht_static_dir }}"
+    template:
+      src: templates/systemd/team-heist-tactics.service.j2
+      dest: "/home/{{ unix_user }}/.config/systemd/user/team-heist-tactics.service"
+      owner: "{{ unix_user }}"
+      group: wheel
+      mode: '0644'
+  - name: Start and enable team-heist-tactics service
+    systemd:
+      name: team-heist-tactics
+      daemon_reload: true
+      enabled: true
+      state: restarted
+      scope: user
+
+- hosts: webservers
   name: Install plex
   tags:
     - plex
@@ -876,6 +927,24 @@
       template:
         src: templates/nginx/diary-django.j2
         dest: /etc/nginx/sites-enabled/diary-django
+        owner: "{{ unix_user }}"
+        group: "root"
+        mode: '0644'
+    - name: Create diary config file
+      become: yes
+      template:
+        src: templates/nginx/diary-django.j2
+        dest: /etc/nginx/sites-enabled/diary-django
+        owner: "{{ unix_user }}"
+        group: "root"
+        mode: '0644'
+    - name: Create team heist tactics config file
+      become: yes
+      vars:
+        tht_static_dir: "{{ team_heist_tactics.tht_static_dir }}"
+      template:
+        src: templates/nginx/team-heist-tactics.j2
+        dest: /etc/nginx/sites-enabled/team-heist-tactics
         owner: "{{ unix_user }}"
         group: "root"
         mode: '0644'

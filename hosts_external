@@ -1,0 +1,5 @@
+[webservers]
+daniel@dport.me ansible_python_interpreter=/usr/bin/python3
+
+[dbservers]
+daniel@dport.me ansible_python_interpreter=/usr/bin/python3
