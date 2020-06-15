@@ -92,17 +92,6 @@
         path: /etc/nginx/nginx.conf
         regexp: 'include /etc/nginx/conf.d/\*.conf;'
         replace: 'include /etc/nginx/sites-enabled/*;'
-    - name: Make nginx cache dir 
-      become: yes
-      file:
-        path: /var/nginx_cache
-        state: directory
-        mode: '0777'
-    - name: Enable support for caching
-      replace:
-        path: /etc/nginx/nginx.conf
-        regexp: '# Load modular configuration.*'
-        replace: 'proxy_cache_path /var/nginx_cache keys_zone=one:10m;'
     - name: Restart nginx
       systemd:
         name: nginx

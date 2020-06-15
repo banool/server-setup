@@ -20,5 +20,7 @@
     command: podman pull quay.io/banool/safecycle
   - name: Repull diary-django image
     command: podman pull quay.io/banool/diary-django
+  - name: Repull team heist tactics image
+    command: podman pull docker.pkg.github.com/banool/team_heist_tactics/team_heist_tactics
   - name: Restart container systemd jobs
-    command: systemctl --user restart codenames-pictures net-worth amaranta-candles-ui amaranta-candles-server trapwords pants safecycle diary-django
+    command: systemctl --user restart codenames-pictures net-worth amaranta-candles-ui amaranta-candles-server trapwords pants safecycle diary-django team-heist-tactics

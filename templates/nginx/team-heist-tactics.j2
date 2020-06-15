@@ -2,7 +2,6 @@ server {
     server_name team-heist-tactics.dport.me tht.dport.me heist.team;
 
     location /static/ {
-        proxy_cache one;
         alias {{ tht_static_dir }}/;
         autoindex off;
     }
