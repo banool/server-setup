@@ -988,6 +988,44 @@
         job: "/usr/local/bin/certbot-auto renew -q"
 
 - hosts: webservers
+  name: Setup dynamic dns
+  tags:
+    - dns
+    - ddclient
+  tasks:
+    - name: Enable powertools repo for perl(Digest::SHA1)
+      become: yes
+      command: dnf config-manager --set-enabled PowerTools
+    - name: Install ddclient
+      become: yes
+      dnf:
+        name:
+          - ddclient
+    - name: Backup ddclient config
+      become: yes
+      command: cp /etc/ddclient.conf /etc/ddclient.conf.bak
+    - name: Copy in ddclient config file
+      become: yes
+      vars:
+        dport_me: "{{ ddclient.dport_me }}"
+        amaranta_house: "{{ ddclient.amaranta_house }}"
+        heist_team: "{{ ddclient.heist_team }}"
+        taxdefence_com_au: "{{ ddclient.taxdefence_com_au }}"
+      template:
+        src: templates/ddclient.conf
+        dest: /etc/ddclient.conf
+        owner: ddclient
+        group: ddclient
+        mode: '0600'
+    - name: Enable ddclient service
+      become: yes
+      systemd:
+        name: ddclient
+        daemon_reload: true
+        enabled: true
+        state: restarted
+
+- hosts: webservers
   name: Final touches
   tags:
     - final

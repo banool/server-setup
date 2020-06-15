@@ -78,7 +78,16 @@
         "ui_password": "fake",
         "ui_email": "fake"
     },
+    "team_heist_tactics": {
+        "tht_static_dir": "fake"
+    },
     "server_name": "fake",
+    "ddclient": {
+        "dport_me": "fake",
+        "amaranta_house": "fake",
+        "heist_team": "fake",
+        "taxdefence_com_au": "fake"
+    },
     "domains": "fake",
     "github_personal_access_token": "fake"
 }
