@@ -1032,6 +1032,19 @@
     - name: Check locally that sites are alive
       shell: "python3 {{ playbook_dir }}/check.py --urls {{ domains }}"
       delegate_to: localhost
+    - name: Add script to update containers
+      copy:
+        src: templates/update_containers.py
+        dest: "/home/{{ unix_user }}/"
+        owner: "{{ unix_user }}"
+        mode: '0755'
+    - name: Add container update script to crontab
+      cron:
+        name: "Update containers"
+        minute: "*/10"
+        job: "python3 /home/{{ unix_user }}/update_containers.py"
+
+
 
 
 

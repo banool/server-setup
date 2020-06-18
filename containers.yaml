@@ -1,26 +1,48 @@
 ---
 - hosts: webservers
   name: Pull images and restart containers
-  tags:
-    - net_worth
   tasks:
   - name: Repull net-worth image
+    tags:
+      - net_worth
     command: podman pull quay.io/banool/net-worth
   - name: Repull codenames-pictures image
+    tags:
+      - codenames
+      - codenames_pictures
     command: podman pull quay.io/banool/codenames-pictures
   - name: Repull amaranta candles server image
+    tags:
+      - amaranta_candles
+      - amaranta_candles_server
     command: podman pull docker.pkg.github.com/banool/amaranta_candles/amaranta_candles_server
   - name: Repull amaranta candles ui image
+    tags:
+      - amaranta_candles
+      - amaranta_candles_ui
     command: podman pull docker.pkg.github.com/banool/amaranta_candles/amaranta_candles_ui
   - name: Repull trapwords image
+    tags:
+      - trapwords
     command: podman pull quay.io/banool/trapwords
   - name: Repull pants image
+    tags:
+      - pants
     command: podman pull quay.io/banool/pants
   - name: Repull safecycle image
+    tags:
+      - safecycle
     command: podman pull quay.io/banool/safecycle
   - name: Repull diary-django image
+    tags:
+      - diary
     command: podman pull quay.io/banool/diary-django
   - name: Repull team heist tactics image
+    tags:
+      - team_heist_tactics
+      - tht
     command: podman pull docker.pkg.github.com/banool/team_heist_tactics/team_heist_tactics
   - name: Restart container systemd jobs
+    tags:
+      - restart 
     command: systemctl --user restart codenames-pictures net-worth amaranta-candles-ui amaranta-candles-server trapwords pants safecycle diary-django team-heist-tactics

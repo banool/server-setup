@@ -18,7 +18,7 @@ ExecStart=/usr/bin/podman run \
   --cgroups no-conmon \
   --conmon-pidfile %t/%n-pid \
   --cidfile %t/%n-cid \
-  -v {{ tht_static_dir }}:/tht/static \
+  -v {{ tht_static_dir }}:/bindmounted_static \
   --publish 127.0.0.1:19996:19996 \
   --name team-heist-tactics docker.pkg.github.com/banool/team_heist_tactics/team_heist_tactics:latest
 
