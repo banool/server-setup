@@ -1,0 +1,20 @@
+server {
+        server_name auslan.{{ server_name }};
+
+        location = /robots.txt { add_header Content-Type text/plain; return 200 "User-agent: *\nDisallow: /\n"; }
+
+        root /var/www/auslan/site/src;
+
+        # Add index.php to the list if you are using PHP
+        index index.html index.htm;
+
+        location / {
+                # First attempt to serve request as file, then
+                # as directory, then fall back to displaying a 404.
+                try_files $uri $uri/ =404;
+        }
+
+        location ~ /\.ht {
+                deny all;
+        }
+}

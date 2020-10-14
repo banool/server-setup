@@ -9,7 +9,7 @@ import urllib.request
 VARS_FILE = "vars.json"
 
 
-async def check_site(url):
+async def check_site(url, debug=False):
     if not url.startswith("http://"):
         url = f"http://{url}"
     try: 
@@ -17,11 +17,17 @@ async def check_site(url):
         f = functools.partial(urllib.request.urlopen, timeout=15)
         ret = await loop.run_in_executor(None, f, url)
         code = ret.status
+        if debug:
+            print("Success", ret.url)
     except urllib.error.HTTPError as e:
         code = e.code
+        if debug:
+            print("HTTPError:", e)
     except urllib.error.URLError as e:
         # Timeout
         code = 999
+        if debug:
+            print("URLError (timeout):", e)
     return url, code
 
 
@@ -29,6 +35,7 @@ async def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--urls", nargs="*")
     parser.add_argument("--read-from-vars", action="store_true")
+    parser.add_argument("--debug", action="store_true")
     args = parser.parse_args()
 
     if not args.urls and not args.read_from_vars:
@@ -44,7 +51,7 @@ async def main():
     for u in args.urls:
         urls |= set(u.split(","))
 
-    tasks = [check_site(url) for url in urls]
+    tasks = [check_site(url, debug=args.debug) for url in urls]
     ret = await asyncio.gather(*tasks)
 
     bad = [(url, code) for url, code in ret if code >= 400 and code != 401]

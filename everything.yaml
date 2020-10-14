@@ -596,6 +596,15 @@
         dest: /var/www/foodbrew
 
 - hosts: webservers
+  name: Install auslan site
+  tags:
+    - auslan
+  tasks:
+    - git:
+        repo: git@github.com:banool/auslan_dictionary.git
+        dest: /var/www/auslan
+
+- hosts: webservers
   name: Install diary site
   tags:
     - diary
@@ -934,6 +943,14 @@
       template:
         src: templates/nginx/team-heist-tactics.j2
         dest: /etc/nginx/sites-enabled/team-heist-tactics
+        owner: "{{ unix_user }}"
+        group: "root"
+        mode: '0644'
+    - name: Create auslan config file
+      become: yes
+      template:
+        src: templates/nginx/auslan.j2
+        dest: /etc/nginx/sites-enabled/auslan
         owner: "{{ unix_user }}"
         group: "root"
         mode: '0644'
