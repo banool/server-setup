@@ -4,11 +4,14 @@
   tags:
     - base
   tasks:
-    - name: Install git
+    - debug:
+        msg: System {{ ansible_facts }} 
+    - name: Install git and dig
       become: yes
       dnf:
         name:
           - git
+          - bind-utils
     - name: Copy across SSH keys for git purposes
       copy:    
         src: "{{ item }}"
@@ -24,27 +27,28 @@
         state: directory
         owner: "{{ unix_user }}"
         mode: '0777'
-    - name: Make SELinux work for containers
+
+    #- name: Make SELinux work for containers
+    #  become: yes
+    #  command: setsebool -P container_manage_cgroup true 
+    #- name: Make SELinux work for nginx 1
+    #  become: yes
+    #  command: semanage permissive -a httpd_t
+    #- name: Make SELinux work for nginx 2
+    #  become: yes
+    #  command: setsebool -P httpd_can_network_relay true
+    #- name: Make SELinux work for nginx 3
+    #  become: yes
+    #  command: setsebool -P httpd_can_network_connect true
+    - name: Put SELinux into non-enforced mode
       become: yes
-      command: setsebool -P container_manage_cgroup true 
-    - name: Make SELinux work for nginx 1
-      become: yes
-      command: semanage permissive -a httpd_t
-    - name: Make SELinux work for nginx 2
-      become: yes
-      command: setsebool -P httpd_can_network_relay true
-    - name: Make SELinux work for nginx 3
-      become: yes
-      command: setsebool -P httpd_can_network_connect true
-    - name: Put SELinux into enforced mode
-      become: yes
-      command: setenforce 1
-    - name: Put SELinux in enforced mode permanently
+      command: setenforce 0
+    - name: Put SELinux in non-enforced mode permanently
       become: yes
       lineinfile:
         path: /etc/selinux/config
         regexp: '^SELINUX='
-        line: SELINUX=enforced
+        line: SELINUX=disabled
     - name: Add github.com as known host
       shell: ssh-keyscan -H github.com >> "{{ ansible_env.HOME }}/.ssh/known_hosts"
     - name: Add github personal access token to podman
