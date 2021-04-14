@@ -1,93 +1,91 @@
 {
-    "host_ssh_source": "fake",
-    "unix_user": "fake",
-    "email": "fake",
-    "mysql_user": "fake",
-    "mysql_password": "fake",
-    "dropbox_access_token": "fake",
-    "net_worth": {
-        "secret_key": "fake",
-        "allowed_hosts": "fake",
-        "deployment_mode": "fake",
-        "internal_port": "fake",
-        "external_port": "fake",
-        "sql_engine": "fake",
-        "sql_database": "fake",
-        "sql_host": "fake",
-        "sql_port": "fake",
-        "robinhood_username": "fake",
-        "robinhood_password": "fake",
-        "robinhood_2fa_barcode": "fake",
-        "personal_capital_email": "fake",
-        "personal_capital_password": "fake",
-        "ui_username": "fake",
-        "ui_email": "fake",
-        "ui_password": "fake",
-        "coinmarketcap_api_key": "fake"
-    },
+    "mysql_password": "fake", 
     "codenames_pictures": {
-        "internal_port": "fake",
+        "internal_port": "fake", 
         "external_port": "fake"
-    },
+    }, 
+    "dropbox_access_token": "fake", 
     "trapwords": {
-        "internal_port": "fake",
+        "internal_port": "fake", 
         "external_port": "fake"
-    },
-    "amaranta_candles": {
-        "allowed_hosts": "fake",
-        "deployment_mode": "fake",
-        "secret_key": "fake",
-        "sql_engine": "fake",
-        "sql_database": "fake",
-        "sql_host": "fake",
-        "sql_port": "fake",
-        "ui_username": "fake",
-        "ui_password": "fake",
-        "ui_email": "fake",
-        "dropbox_backup_path": "fake",
-        "external_static_path": "fake",
-        "server_internal_static_path": "fake",
-        "ui_internal_static_path": "fake"
-    },
+    }, 
     "deluge": {
-        "config_directory": "fake",
-        "download_directory": "fake",
-        "external_port": "fake"
-    },
-    "pants": {
-        "consumer_key": "fake",
-        "access_token": "fake",
-        "rocket_secret_key": "fake",
-        "internal_port": "fake",
-        "external_port": "fake",
-        "internal_pages_directory": "fake",
-        "external_pages_directory": "fake"
-    },
+        "download_directory": "fake", 
+        "external_port": "fake", 
+        "config_directory": "fake"
+    }, 
     "safecycle": {
-        "google_key": "fake",
-        "static_port": "fake",
-        "api_port": "fake"
-    },
-    "diary": {
-        "allowed_hosts": "fake",
-        "secret_key": "fake",
-        "sql_database": "fake",
-        "sql_host": "fake",
-        "sql_port": "fake",
-        "ui_username": "fake",
-        "ui_password": "fake",
-        "ui_email": "fake"
-    },
+        "api_port": "fake", 
+        "static_port": "fake", 
+        "google_key": "fake"
+    }, 
+    "server_name": "fake", 
+    "ddclient": {
+        "amaranta_house": "fake", 
+        "dport_me": "fake", 
+        "heist_team": "fake"
+    }, 
     "team_heist_tactics": {
         "tht_static_dir": "fake"
-    },
-    "server_name": "fake",
-    "ddclient": {
-        "dport_me": "fake",
-        "amaranta_house": "fake",
-        "heist_team": "fake",
-        "taxdefence_com_au": "fake"
-    },
-    "domains": "fake",
-    "github_personal_access_token": "fake"
+    }, 
+    "mysql_user": "fake", 
+    "amaranta_candles": {
+        "sql_database": "fake", 
+        "dropbox_backup_path": "fake", 
+        "sql_port": "fake", 
+        "external_static_path": "fake", 
+        "sql_engine": "fake", 
+        "ui_username": "fake", 
+        "ui_email": "fake", 
+        "ui_password": "fake", 
+        "deployment_mode": "fake", 
+        "sql_host": "fake", 
+        "allowed_hosts": "fake", 
+        "secret_key": "fake", 
+        "ui_internal_static_path": "fake", 
+        "server_internal_static_path": "fake"
+    }, 
+    "unix_user": "fake", 
+    "github_personal_access_token": "fake", 
+    "host_ssh_source": "fake", 
+    "diary": {
+        "sql_database": "fake", 
+        "sql_port": "fake", 
+        "ui_username": "fake", 
+        "ui_email": "fake", 
+        "ui_password": "fake", 
+        "sql_host": "fake", 
+        "allowed_hosts": "fake", 
+        "secret_key": "fake"
+    }, 
+    "pants": {
+        "rocket_secret_key": "fake", 
+        "access_token": "fake", 
+        "consumer_key": "fake", 
+        "internal_port": "fake", 
+        "external_pages_directory": "fake", 
+        "internal_pages_directory": "fake", 
+        "external_port": "fake"
+    }, 
+    "email": "fake", 
+    "net_worth": {
+        "sql_database": "fake", 
+        "personal_capital_email": "fake", 
+        "sql_port": "fake", 
+        "coinmarketcap_api_key": "fake", 
+        "internal_port": "fake", 
+        "robinhood_password": "fake", 
+        "ui_username": "fake", 
+        "ui_email": "fake", 
+        "ui_password": "fake", 
+        "sql_host": "fake", 
+        "deployment_mode": "fake", 
+        "sql_engine": "fake", 
+        "allowed_hosts": "fake", 
+        "secret_key": "fake", 
+        "robinhood_username": "fake", 
+        "external_port": "fake", 
+        "robinhood_2fa_barcode": "fake", 
+        "personal_capital_password": "fake"
+    }
 }
