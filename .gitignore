@@ -1,5 +1,6 @@
 # Secrets
 vars.json
+sites.comma
 
 # Junk I want to ignore
 *.retry

@@ -57,8 +57,6 @@ async def main():
     for u in args.urls:
         urls |= set(u.split(","))
 
-    print(urls)
-
     tasks = [check_site(url, debug=args.debug) for url in urls]
     ret = await asyncio.gather(*tasks)
 
