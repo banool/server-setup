@@ -19,7 +19,7 @@ ExecStart=/usr/bin/podman run \
   --conmon-pidfile %t/%n-pid \
   --cidfile %t/%n-cid \
   --publish 127.0.0.1:{{ external_port }}:{{ internal_port }} \
-  --name trapwords trapwords:latest
+  --name trapwords quay.io/banool/trapwords:latest
 
 ExecStop=/usr/bin/podman rm -f --cidfile %t/%n-cid -t 30
 ExecStopPost=/usr/bin/podman rm --ignore -f --cidfile %t/%n-cid

@@ -19,7 +19,7 @@ ExecStart=/usr/bin/podman run \
   --cidfile %t/%n-cid \
   --publish 127.0.0.1:42069:80 \
   -v {{ external_static_path }}:{{ ui_internal_static_path }} \
-  --name amaranta-candles-ui amaranta_candles_ui:latest
+  --name amaranta-candles-ui docker.pkg.github.com/banool/amaranta_candles/amaranta_candles_ui:latest
 
 ExecStop=/usr/bin/podman rm -f --cidfile %t/%n-cid -t 30
 ExecStopPost=/usr/bin/podman rm --ignore -f --cidfile %t/%n-cid

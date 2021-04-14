@@ -37,7 +37,7 @@ ExecStart=/usr/bin/podman run \
   -e coinmarketcap_api_key='{{ coinmarketcap_api_key }}' \
   --network host \
   -v /home/daniel/.ssh:/root/.ssh \
-  --name net-worth net-worth:latest
+  --name net-worth quay.io/banool/net-worth:latest
 
 ExecStop=/usr/bin/podman rm -f --cidfile %t/%n-cid -t 45
 ExecStopPost=/usr/bin/podman rm --ignore -f --cidfile %t/%n-cid

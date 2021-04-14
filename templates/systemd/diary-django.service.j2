@@ -29,7 +29,7 @@ ExecStart=/usr/bin/podman run \
   -e UI_EMAIL='{{ ui_email }}' \
   --network host \
   -v /home/daniel/.ssh:/root/.ssh \
-  --name diary-django diary-django:latest
+  --name diary-django quay.io/banool/diary-django:latest
 
 ExecStop=/usr/bin/podman rm -f --cidfile %t/%n-cid -t 45
 ExecStopPost=/usr/bin/podman rm --ignore -f --cidfile %t/%n-cid

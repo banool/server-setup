@@ -19,7 +19,7 @@ ExecStart=/usr/bin/podman run \
   -e GOOGLE_KEY={{ google_key }} \
   --cidfile %t/%n-cid \
   --network host \
-  --name safecycle safecycle:latest
+  --name safecycle quay.io/banool/safecycle:latest
 
 ExecStop=/usr/bin/podman rm -f --cidfile %t/%n-cid
 ExecStopPost=/usr/bin/podman rm --ignore -f --cidfile %t/%n-cid

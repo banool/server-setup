@@ -18,7 +18,7 @@ ExecStart=/usr/bin/podman run \
   --conmon-pidfile %t/%n-pid \
   --cidfile %t/%n-cid \
   --publish 127.0.0.1:12340:12340 \
-  --name mastermind comp30023-assn2:latest
+  --name mastermind quay.io/banool/comp30023-assn2:latest
 
 ExecStop=/usr/bin/podman rm -f --cidfile %t/%n-cid
 ExecStopPost=/usr/bin/podman rm --ignore -f --cidfile %t/%n-cid

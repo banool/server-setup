@@ -18,7 +18,7 @@ ExecStart=/usr/bin/podman run \
   --conmon-pidfile %t/%n-pid \
   --cidfile %t/%n-cid \
   --publish 127.0.0.1:{{ external_port }}:{{ internal_port }} \
-  --name codenames-pictures codenames-pictures:latest
+  --name codenames-pictures quay.io/banool/codenames-pictures:latest
 
 ExecStop=/usr/bin/podman rm -f --cidfile %t/%n-cid
 ExecStopPost=/usr/bin/podman rm --ignore -f --cidfile %t/%n-cid
