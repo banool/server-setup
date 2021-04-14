@@ -12,6 +12,9 @@
         name:
           - git
           - bind-utils
+    - name: Install a newer podman
+      become: yes
+      shell: dnf -y module disable container-tools && dnf -y install 'dnf-command(copr)' && dnf -y copr enable rhcontainerbot/container-selinux && curl -L -o /etc/yum.repos.d/devel:kubic:libcontainers:stable.repo https://download.opensuse.org/repositories/devel:/kubic:/libcontainers:/stable/CentOS_8/devel:kubic:libcontainers:stable.repo && dnf -y install podman
     - name: Copy across SSH keys for git purposes
       copy:    
         src: "{{ item }}"
@@ -27,22 +30,10 @@
         state: directory
         owner: "{{ unix_user }}"
         mode: '0777'
-
-    #- name: Make SELinux work for containers
-    #  become: yes
-    #  command: setsebool -P container_manage_cgroup true 
-    #- name: Make SELinux work for nginx 1
-    #  become: yes
-    #  command: semanage permissive -a httpd_t
-    #- name: Make SELinux work for nginx 2
-    #  become: yes
-    #  command: setsebool -P httpd_can_network_relay true
-    #- name: Make SELinux work for nginx 3
-    #  become: yes
-    #  command: setsebool -P httpd_can_network_connect true
     - name: Put SELinux into non-enforced mode
       become: yes
       command: setenforce 0
+      ignore_errors: yes
     - name: Put SELinux in non-enforced mode permanently
       become: yes
       lineinfile:
@@ -777,6 +768,7 @@
     - name: Alter download path in core.conf
       become: yes
       command: "podman exec -it deluge sed -i 's@/root/Downloads@/downloads@g' /config/core.conf"
+      ignore_errors: yes
 
 - hosts: webservers
   name: Setup sites with nginx
@@ -932,14 +924,6 @@
         owner: "{{ unix_user }}"
         group: "root"
         mode: '0644'
-    - name: Create diary config file
-      become: yes
-      template:
-        src: templates/nginx/diary-django.j2
-        dest: /etc/nginx/sites-enabled/diary-django
-        owner: "{{ unix_user }}"
-        group: "root"
-        mode: '0644'
     - name: Create team heist tactics config file
       become: yes
       vars:
@@ -964,8 +948,12 @@
   tags:
     - https
   tasks:
+    - name: Add epel-release
+      become: yes
+      command: dnf install -y epel-release && dnf upgrade
+      ignore_errors: yes
     - name: Get public IP of this host
-      command: "dig -4 @resolver1.opendns.com ANY myip.opendns.com +short"
+      command: curl https://ipinfo.io/ip
       register: public_ip
     - name: Get IP of domain
       command: "dig -4 +short {{ server_name }}"
@@ -980,22 +968,44 @@
     - name: Print debug success when both IPs are the same
       debug: 
         msg: The public IP of the host and the IP of the domain are the same, hopefully this means your DNS records are correct. Also think about NAT. Proceeding with https
+    - name: Install snap
+      become: yes
+      dnf:
+        name:
+          - snapd
+    - name: Enable snapd
+      become: yes
+      command: systemctl enable --now snapd.socket
+    - name: Enabled snapd classic support
+      become: yes
+      ansible.builtin.file:
+        src: /var/lib/snapd/snap
+        dest: /snap
+        owner: root
+        group: root
+        state: link
+    - name: Update snap
+      become: yes
+      shell: snap install core; snap refresh core
     - name: Get certbot
       become: yes
-      shell: wget https://dl.eff.org/certbot-auto && mv certbot-auto /usr/local/bin/certbot-auto && chown root /usr/local/bin/certbot-auto && chmod 0755 /usr/local/bin/certbot-auto
-    - name: Print cerbot command we will run
-      debug:
-        msg: "/usr/local/bin/certbot-auto --nginx -n --agree-tos --email {{ email }} --domains {{ domains }} --expand"
-    - name: Run certbot
+      command: snap install --classic certbot
+    - name: Get all the sites installed
       become: yes
-      command: /usr/local/bin/certbot-auto --nginx -n --agree-tos --email {{ email }} --domains {{ domains }} --expand
+      shell: nginx -T 2>/dev/null | grep "server_name " | grep -v '# ser' | sed 's/.*server_name \(.*\);/\1/' | sed 's/ /\n/' | tr ' ' '\n' | sort -u | grep [a-z] | grep -v tax | tr '\n' ',' | sed 's/.$//'
+      register: comma_separated_sites
+    - name: Run certbot, mostly to collect new sites
+      become: yes
+      shell: certbot --nginx -n --expand --agree-tos --email {{email}} --domains {{comma_separated_sites.stdout}}
     - name: Put autorenew in crontab
       become: yes
       cron:
         name: "autorenew certs with cerbot"
         minute: "0"
-        hour: "2"
-        job: "/usr/local/bin/certbot-auto renew -q"
+        hour: "4"
+        job: "/usr/bin/certbot renew"
+    - name: Write comma separated enabled sites to local file
+      local_action: copy content="{{comma_separated_sites.stdout}}" dest="{{ playbook_dir }}/sites.comma"
 
 - hosts: webservers
   name: Setup dynamic dns
@@ -1003,9 +1013,6 @@
     - dns
     - ddclient
   tasks:
-    - name: Enable powertools repo for perl(Digest::SHA1)
-      become: yes
-      command: dnf config-manager --set-enabled PowerTools
     - name: Install ddclient
       become: yes
       dnf:
@@ -1018,9 +1025,9 @@
       become: yes
       vars:
         dport_me: "{{ ddclient.dport_me }}"
-        amaranta_house: "{{ ddclient.amaranta_house }}"
+        # amaranta_house: "{{ ddclient.amaranta_house }}"
         heist_team: "{{ ddclient.heist_team }}"
-        taxdefence_com_au: "{{ ddclient.taxdefence_com_au }}"
+        # taxdefence_com_au: "{{ ddclient.taxdefence_com_au }}"
       template:
         src: templates/ddclient.conf
         dest: /etc/ddclient.conf
@@ -1042,7 +1049,7 @@
   tasks:
     - name: Turn off screen
       become: yes
-      shell: "echo 0 | sudo tee /sys/class/backlight/intel_backlight/brightness"
+      shell: "exit && echo 0 | sudo tee /sys/class/backlight/intel_backlight/brightness" # todo reenable if needed
     - name: Restart nginx
       become: yes
       systemd:
@@ -1051,7 +1058,7 @@
         enabled: true
         state: restarted
     - name: Check locally that sites are alive
-      shell: "python3 {{ playbook_dir }}/check.py --urls {{ domains }}"
+      shell: "python3 {{ playbook_dir }}/check.py --read-from-sites-comma"
       delegate_to: localhost
     - name: Add script to update containers
       copy:
