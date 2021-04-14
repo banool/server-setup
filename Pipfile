@@ -3,12 +3,11 @@ name = "pypi"
 url = "https://pypi.org/simple"
 verify_ssl = true
 
-[dev-packages]
-
 [packages]
-ansible = "*"
 paramiko = "*"
 pymysql = {extras = ["rsa"],version = "*"}
+ansible = "*"
+certifi = "*"
 
 [requires]
 python_version = "3.7"
