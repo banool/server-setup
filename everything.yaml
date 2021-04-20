@@ -678,6 +678,30 @@
       scope: user
 
 - hosts: webservers
+  name: Install Hot Dogs site
+  tags:
+    - hot_dogs
+    - hotdogs
+  tasks:
+  - name: Pull Hot Dogs image
+    command: podman pull docker.pkg.github.com/banool/hot_dogs/hot_dogs_backend:latest
+  - name: Create Hot Dogs systemd spec file
+    become: yes
+    template:
+      src: templates/systemd/hot-dogs.service.j2
+      dest: "/home/{{ unix_user }}/.config/systemd/user/hot-dogs.service"
+      owner: "{{ unix_user }}"
+      group: wheel
+      mode: '0644'
+  - name: Start and enable hot-dogs service
+    systemd:
+      name: hot-dogs
+      daemon_reload: true
+      enabled: true
+      state: restarted
+      scope: user
+
+- hosts: webservers
   name: Install plex
   tags:
     - plex
@@ -931,6 +955,14 @@
       template:
         src: templates/nginx/team-heist-tactics.j2
         dest: /etc/nginx/sites-enabled/team-heist-tactics
+        owner: "{{ unix_user }}"
+        group: "root"
+        mode: '0644'
+    - name: Create Hot Dogs config file
+      become: yes
+      template:
+        src: templates/nginx/hot-dogs.j2
+        dest: /etc/nginx/sites-enabled/hot-dogs
         owner: "{{ unix_user }}"
         group: "root"
         mode: '0644'

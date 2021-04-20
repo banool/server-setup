@@ -90,6 +90,7 @@ systemd_unit_names = [s for s in systemd_unit_names if s.endswith(".service")]
 
 systemd_unit_name_overrides = {
     "quay.io/banool/comp30023-assn2:latest": "mastermind",
+    "docker.pkg.github.com/banool/hot_dogs/hot_dogs_backend:latest": "hot-dogs",
 }
 if out_of_date:
     print("Restarting containers that are out of date...")

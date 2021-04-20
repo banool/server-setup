@@ -1,0 +1,28 @@
+[Unit]
+Description=Hot Dogs Podman Userspace Container
+Wants=network.target
+After=network-online.target
+
+[Service]
+Environment=PODMAN_SYSTEMD_UNIT=%n
+Restart=on-failure
+
+ExecStartPre=-/usr/bin/podman rm -f hot-dogs
+ExecStartPre=-/usr/bin/podman rm --storage hot-dogs
+ExecStartPre=/usr/bin/rm -f %t/%n-pid %t/%n-cid
+ExecStart=/usr/bin/podman run \
+  -a stdout -a stderr \
+  --cgroups no-conmon \
+  --conmon-pidfile %t/%n-pid \
+  --cidfile %t/%n-cid \
+  --publish 127.0.0.1:9898:9898 \
+  --name hot-dogs docker.pkg.github.com/banool/hot_dogs/hot_dogs_backend:latest
+
+ExecStop=/usr/bin/podman rm -f --cidfile %t/%n-cid -t 45
+ExecStopPost=/usr/bin/podman rm --ignore -f --cidfile %t/%n-cid
+
+KillMode=none
+PIDFile=%t/%n-pid
+
+[Install]
+WantedBy=multi-user.target default.target
