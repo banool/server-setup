@@ -489,13 +489,17 @@
         dest: /var/www/bunkopepi
 
 - hosts: webservers
-  name: Install bunkopepi site
+  name: Install Hot Dogs site
   tags:
-    - bunkopepi
+    - hotdogs
+    - hot_dogs
   tasks:
+    - command: rm -rf /tmp/hotdogs
     - git:
-        repo: git@github.com:banool/bunkopepi.git
-        dest: /var/www/bunkopepi
+        repo: git@github.com:banool/hot_dogs.git
+        dest: /tmp/hotdogs
+    - command: rm -rf /var/www/hot_dogs
+    - command: mv /tmp/hotdogs/site /var/www/hot_dogs
 
 - hosts: webservers
   name: Install internode site
@@ -678,7 +682,7 @@
       scope: user
 
 - hosts: webservers
-  name: Install Hot Dogs site
+  name: Install Hot Dogs backend
   tags:
     - hot_dogs
     - hotdogs

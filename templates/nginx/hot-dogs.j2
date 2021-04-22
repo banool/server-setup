@@ -1,7 +1,17 @@
 server {
     server_name hotdogs.dport.me hotdogs.games;
 
+    # The site itself.
+    root /var/www/hot_dogs;
+
+    index index.html index.htm;
+
     location / {
+        try_files $uri $uri/ =404;
+    }
+
+    # Endpoint for the game server.
+    location /api {
         include proxy_params;
         proxy_pass http://127.0.0.1:9898;
         proxy_http_version 1.1;
