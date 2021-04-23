@@ -1064,6 +1064,7 @@
         # amaranta_house: "{{ ddclient.amaranta_house }}"
         heist_team: "{{ ddclient.heist_team }}"
         # taxdefence_com_au: "{{ ddclient.taxdefence_com_au }}"
+        hot_dogs: "{{ ddclient.hot_dogs }}"
       template:
         src: templates/ddclient.conf
         dest: /etc/ddclient.conf
